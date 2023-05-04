@@ -1,0 +1,26 @@
+{
+  "name": "koishi-plugin-starrail",
+  "description": "A koishi plugin for Honkai Star Rail",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "scripts": {},
+  "koishi": {
+    "hidden": true,
+    "description": {
+      "zh": "星穹铁道"
+    }
+  },
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin"
+  ],
+  "peerDependencies": {
+    "koishi": "4.12.6"
+  }
+}

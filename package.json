@@ -1,26 +1,37 @@
 {
-  "name": "koishi-plugin-starrail",
-  "description": "A koishi plugin for Honkai Star Rail",
+  "name": "@root/starrail",
   "version": "0.0.0",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
-  "files": [
-    "lib",
-    "dist"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
-  "scripts": {},
-  "koishi": {
-    "hidden": true,
-    "description": {
-      "zh": "星穹铁道"
-    }
+  "packageManager": "yarn@1.22.19",
+  "license": "MIT",
+  "scripts": {
+    "build": "yakumo build",
+    "docs:dev": "vitepress dev docs --open",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs",
+    "bump": "yakumo version",
+    "dep": "yakumo upgrade",
+    "pub": "yakumo publish"
   },
-  "keywords": [
-    "chatbot",
-    "koishi",
-    "plugin"
-  ],
-  "peerDependencies": {
-    "koishi": "4.12.6"
+  "devDependencies": {
+    "@koishijs/vitepress": "^1.6.5",
+    "@types/node": "^18.15.11",
+    "esbuild": "^0.14.54",
+    "esbuild-register": "^3.4.2",
+    "sass": "^1.60.0",
+    "typescript": "4.8.2",
+    "yakumo": "^0.3.10",
+    "yakumo-esbuild": "^0.3.22",
+    "yakumo-esbuild-yaml": "^0.3.1",
+    "yakumo-publish": "^0.3.4",
+    "yakumo-publish-sync": "^0.3.2",
+    "yakumo-tsc": "^0.3.8",
+    "yakumo-upgrade": "^0.3.3",
+    "yakumo-version": "^0.3.4",
+    "yml-register": "^1.1.0",
+    "vitepress": "1.0.0-alpha.26"
   }
 }
