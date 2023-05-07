@@ -1,11 +1,12 @@
 lib
 dist
-accounts
+temp
 
 node_modules
 npm-debug.log
 yarn-debug.log
 yarn-error.log
+tsconfig.temp.json
 tsconfig.tsbuildinfo
 
 .eslintcache
@@ -16,9 +17,3 @@ tsconfig.tsbuildinfo
 *.ntvs*
 *.njsproj
 *.sln
-.env
-.npmrc
-koishi.yml
-yakumo.yml
-yarn.lock
-pakages
