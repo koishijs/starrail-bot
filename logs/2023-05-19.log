@@ -1,0 +1,93 @@
+[38;5;8m2023-05-19 10:05:48[0m [W] [38;5;78;1mapp[0m Error: Cannot find module './path.json'
+                        Require stack:
+                        - D:\dev\starrail-bot\packages\atlas\lib\index.js
+                        - D:\dev\starrail-bot\dev\index.ts
+                            at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1075:15)
+                            at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (C:\Users\29115\AppData\Roaming\npm\node_modules\ts-node\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+                            at Function.Module._load (node:internal/modules/cjs/loader:920:27)
+                            at Module.require (node:internal/modules/cjs/loader:1141:19)
+                            at require (node:internal/modules/cjs/helpers:110:18)
+                            at D:\dev\starrail-bot\packages\atlas\lib\index.js:17:30
+                            at D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:40
+                            at MainScope.ensure (D:\dev\starrail-bot\node_modules\cordis\src\scope.ts:94:18)
+                            at Lifecycle.start (D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:21)
+                            at Context.start (D:\dev\starrail-bot\node_modules\cordis\src\context.ts:78:30)
+[38;5;8m2023-05-19 10:06:50[0m [W] [38;5;78;1mapp[0m Error: Cannot find module './path.json'
+                        Require stack:
+                        - D:\dev\starrail-bot\packages\atlas\lib\index.js
+                        - D:\dev\starrail-bot\dev\index.ts
+                            at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1075:15)
+                            at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (C:\Users\29115\AppData\Roaming\npm\node_modules\ts-node\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+                            at Function.Module._load (node:internal/modules/cjs/loader:920:27)
+                            at Module.require (node:internal/modules/cjs/loader:1141:19)
+                            at require (node:internal/modules/cjs/helpers:110:18)
+                            at D:\dev\starrail-bot\packages\atlas\lib\index.js:17:30
+                            at D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:40
+                            at MainScope.ensure (D:\dev\starrail-bot\node_modules\cordis\src\scope.ts:94:18)
+                            at Lifecycle.start (D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:21)
+                            at Context.start (D:\dev\starrail-bot\node_modules\cordis\src\context.ts:78:30)
+[38;5;8m2023-05-19 10:07:35[0m [W] [38;5;78;1mapp[0m Error: Cannot find module './path.json'
+                        Require stack:
+                        - D:\dev\starrail-bot\packages\atlas\lib\index.js
+                        - D:\dev\starrail-bot\dev\index.ts
+                            at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1075:15)
+                            at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (C:\Users\29115\AppData\Roaming\npm\node_modules\ts-node\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+                            at Function.Module._load (node:internal/modules/cjs/loader:920:27)
+                            at Module.require (node:internal/modules/cjs/loader:1141:19)
+                            at require (node:internal/modules/cjs/helpers:110:18)
+                            at D:\dev\starrail-bot\packages\atlas\lib\index.js:17:30
+                            at D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:40
+                            at MainScope.ensure (D:\dev\starrail-bot\node_modules\cordis\src\scope.ts:94:18)
+                            at Lifecycle.start (D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:21)
+                            at Context.start (D:\dev\starrail-bot\node_modules\cordis\src\context.ts:78:30)
+[38;5;8m2023-05-19 10:08:10[0m [W] [38;5;78;1mapp[0m Error: Cannot find module './path.json'
+                        Require stack:
+                        - D:\dev\starrail-bot\packages\atlas\lib\index.js
+                        - D:\dev\starrail-bot\dev\index.ts
+                            at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1075:15)
+                            at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (C:\Users\29115\AppData\Roaming\npm\node_modules\ts-node\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+                            at Function.Module._load (node:internal/modules/cjs/loader:920:27)
+                            at Module.require (node:internal/modules/cjs/loader:1141:19)
+                            at require (node:internal/modules/cjs/helpers:110:18)
+                            at D:\dev\starrail-bot\packages\atlas\lib\index.js:17:30
+                            at D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:40
+                            at MainScope.ensure (D:\dev\starrail-bot\node_modules\cordis\src\scope.ts:94:18)
+                            at Lifecycle.start (D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:21)
+                            at Context.start (D:\dev\starrail-bot\node_modules\cordis\src\context.ts:78:30)
+[38;5;8m2023-05-19 10:09:51[0m [W] [38;5;78;1mapp[0m Error: ENOENT: no such file or directory, open './path.json'
+                            at Object.openSync (node:fs:601:3)
+                            at Object.readFileSync (node:fs:469:35)
+                            at D:\dev\starrail-bot\packages\atlas\lib\index.js:17:54
+                            at D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:40
+                            at MainScope.ensure (D:\dev\starrail-bot\node_modules\cordis\src\scope.ts:94:18)
+                            at Lifecycle.start (D:\dev\starrail-bot\node_modules\cordis\src\events.ts:167:21)
+                            at Context.start (D:\dev\starrail-bot\node_modules\cordis\src\context.ts:78:30)
+                            at Context.import_core3.Context.start (D:\dev\starrail-bot\node_modules\@satorijs\satori\src\index.ts:64:16)
+                            at processTicksAndRejections (node:internal/process/task_queues:95:5)
+[38;5;8m2023-05-19 10:15:24[0m [W] [38;5;215;1mcommand[0m bond https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?authkey_ver=1&amp;sign_type=2&amp;auth_appid=webview_gacha&amp;win_mode=fullscreen&amp;gacha_id=4611e733d9bac2b4402701bd189a9aa226a7&amp;timestamp=1681910087&amp;region=prod_gf_cn&amp;default_gacha_type=11&amp;lang=zh-cn&amp;authkey=gurqlC0wvvN1i0wTRvUyYhqctAmT4YTx%2BY8Q7I5r8k9UvZnW6SB9foRdfDjUTd1xGWbgGM2HJk76J6Rt2PjnkyySCxlJsOtVUxtOjd9qLcdayNkS6oegYgvrFb1TyJhBdATfIHoKoMedpwHRK1eKqj90LDN2tjMKoyLTb9TZk1dfIjOIA0PlcL1Ekg1FAim4HroUjX2ZDlOecUUScWXfIeCCT2ntqeaKrm0ym%2BpnVEVqaM8ryKl51uQUROWbTxrnUNIsD9IIJs%2FeI%2BpzQgftxyszQ4ZXaBlapnpZEgeHe9jm%2FXzRgI0nBdVO23f8zdpyf9JZV2gECG7cwO%2FZM8ELlEGbHF84jKZvGoi8S2Y%2FkPlnzbTgc%2BjUoKG1cPsxggcySHQ6SSoWZAQ%2BMLB5YTldaycVTAu%2FBIKOF5RDVrE%2FVvhTUFGMzU9gxW%2Bw%2FNLVUsOm6TDOg6gHNN65NdMdloOwxY1uoBS4EmCJqBseBZ47DuEOlM9rbVs4x6gqzGBl79HIDH%2Fy0eMP72%2B0SdhzrpizbOuPUuu0lV%2FvFlZQLGD9X7R9SzXaLdK1LORcNB%2BRkyrV6h8Fl%2Bqn4Qvror6L6Gf%2Bc6KJ2eZpM%2FC27kpJf7M8vd...
+                        TypeError: Cannot read properties of undefined (reading 'get')
+                            at _Command.<anonymous> (D:\dev\starrail-bot\packages\gachaLog\lib\index.js:46:54)
+                            at processTicksAndRejections (node:internal/process/task_queues:95:5)
+                            at async Array.<anonymous> (D:\dev\starrail-bot\node_modules\@koishijs\core\src\command\command.ts:285:14)
+                            at async _Command.execute (D:\dev\starrail-bot\node_modules\@koishijs\core\src\command\command.ts:301:22)
+                            at async D:\dev\starrail-bot\node_modules\@koishijs\core\src\session.ts:393:22
+                            at async Session2.withScope (D:\dev\starrail-bot\node_modules\@koishijs\core\src\session.ts:267:14)
+                            at async next (D:\dev\starrail-bot\node_modules\@koishijs\core\src\middleware.ts:312:16)
+                            at async next (D:\dev\starrail-bot\node_modules\@koishijs\core\src\middleware.ts:312:16)
+                            at async Processor._handleMessage (D:\dev\starrail-bot\node_modules\@koishijs\core\src\middleware.ts:323:22)
+[38;5;8m2023-05-19 10:19:33[0m [I] [38;5;209;1msqlite[0m auto creating table [38;5;209muser[0m
+[38;5;8m2023-05-19 10:19:33[0m [I] [38;5;209;1msqlite[0m auto creating table [38;5;209mchannel[0m
+[38;5;8m2023-05-19 10:19:33[0m [I] [38;5;209;1msqlite[0m auto creating table [38;5;209mstarrail[0m
+[38;5;8m2023-05-19 10:19:33[0m [I] [38;5;209;1msqlite[0m auto creating table [38;5;209mbinding[0m
+[38;5;8m2023-05-19 10:19:44[0m [W] [38;5;215;1mcommand[0m bond https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?authkey_ver=1&amp;amp;sign_type=2&amp;amp;auth_appid=webview_gacha&amp;amp;win_mode=fullscreen&amp;amp;gacha_id=4611e733d9bac2b4402701bd189a9aa226a7&amp;amp;timestamp=1681910087&amp;amp;region=prod_gf_cn&amp;amp;default_gacha_type=11&amp;amp;lang=zh-cn&amp;amp;authkey=gurqlC0wvvN1i0wTRvUyYhqctAmT4YTx%2BY8Q7I5r8k9UvZnW6SB9foRdfDjUTd1xGWbgGM2HJk76J6Rt2PjnkyySCxlJsOtVUxtOjd9qLcdayNkS6oegYgvrFb1TyJhBdATfIHoKoMedpwHRK1eKqj90LDN2tjMKoyLTb9TZk1dfIjOIA0PlcL1Ekg1FAim4HroUjX2ZDlOecUUScWXfIeCCT2ntqeaKrm0ym%2BpnVEVqaM8ryKl51uQUROWbTxrnUNIsD9IIJs%2FeI%2BpzQgftxyszQ4ZXaBlapnpZEgeHe9jm%2FXzRgI0nBdVO23f8zdpyf9JZV2gECG7cwO%2FZM8ELlEGbHF84jKZvGoi8S2Y%2FkPlnzbTgc%2BjUoKG1cPsxggcySHQ6SSoWZAQ%2BMLB5YTldaycVTAu%2FBIKOF5RDVrE%2FVvhTUFGMzU9gxW%2Bw%2FNLVUsOm6TDOg6gHNN65NdMdloOwxY1uoBS4EmCJqBseBZ47DuEOlM9rbVs4x6gqzGBl79HIDH%2Fy0eMP72%2B0SdhzrpizbOuPUuu0lV%2FvFlZQLGD9X7R9SzXaLdK1LORcNB%2BRkyrV6h8Fl%2Bqn4Q...
+                        TypeError: Cannot read properties of null (reading 'list')
+                            at GachaLog.fetchRecordsByGachaType (D:\dev\starrail-bot\packages\gachaLog\lib\index.js:138:34)
+                            at processTicksAndRejections (node:internal/process/task_queues:95:5)
+                            at async GachaLog.fetchGachaRecords (D:\dev\starrail-bot\packages\gachaLog\lib\index.js:157:29)
+                            at async GachaLog.fetchUigfRecords (D:\dev\starrail-bot\packages\gachaLog\lib\index.js:165:22)
+                            at async _Command.<anonymous> (D:\dev\starrail-bot\packages\gachaLog\lib\index.js:40:26)
+                            at async Array.<anonymous> (D:\dev\starrail-bot\node_modules\@koishijs\core\src\command\command.ts:285:14)
+                            at async _Command.execute (D:\dev\starrail-bot\node_modules\@koishijs\core\src\command\command.ts:301:22)
+                            at async D:\dev\starrail-bot\node_modules\@koishijs\core\src\session.ts:393:22
+                            at async Session2.withScope (D:\dev\starrail-bot\node_modules\@koishijs\core\src\session.ts:267:14)
+                            at async next (D:\dev\starrail-bot\node_modules\@koishijs\core\src\middleware.ts:312:16)
