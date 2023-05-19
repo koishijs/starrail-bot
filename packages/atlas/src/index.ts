@@ -8,6 +8,7 @@ class Atlas {
     path_dict: Dict
     name_list: string[]
     constructor(private ctx: Context, private config: Atlas.Config) {
+        ctx.i18n.define('zh',require('./locales/zh'))
         ctx.on('ready', async () => {
             this.path_data = {
                 "role": {
@@ -201,17 +202,14 @@ namespace Atlas {
         engine: boolean
         repo: string
     }
-    export const Config = Schema.intersect([
+    export const Config = 
         Schema.object({
             prefix: Schema.string().default('#').description('匹配命令的前缀字符'),
-
-        }).description('基础设置'),
-        Schema.object({
             engine: Schema.boolean().default(true).description('是否使用在线引擎'),
             src_path: Schema.string().default('../../../star-rail-atlas').description('资源文件的路径'),
             repo: Schema.string().default('https://gitee.com/Nwflower/star-rail-atlas/raw/master').description('gitee在线资源的地址'),
         }).description('进阶设置')
-    ])
+
 }
 
 export default Atlas

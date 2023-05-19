@@ -1,12 +1,12 @@
-import { Context, Session, Schema} from "koishi";
+import { Context, Session, Schema, Logger } from "koishi";
 export const gacha = {
-  1: '群星跃迁',
-  2: '新手跃迁',
-  11: '限定跃迁',
-  12: '光锥跃迁'
+  '1': '群星跃迁',
+  '2': '新手跃迁',
+  '11': '限定跃迁',
+  '12': '光锥跃迁'
 } as const;
 
-
+export const logger = new Logger('抽卡分析')
 declare module 'koishi' {
   interface Tables {
     starrail: GachaLog.Database
@@ -41,64 +41,139 @@ class GachaLog {
       uid: 'string',  // 游戏Id
       uuid: 'list', // 用户Id
       link: 'string', // Gachalog url
+      history: 'string' // 历史记录
     }, {
       primary: 'id', //设置 id 为主键
       unique: ['id', 'uid'], //设置 uid及id 为唯一键
       autoInc: true
     })
-    ctx.command('sr.bond <url:text>')
-      .action(async ({ session }, url) => {
-        if(!url){
-          session.send('请输入url')
-          url = await session.prompt()
+
+    ctx.i18n.define('zh', require('./locales/zh'))
+    ctx.command('sr.bind <uir:string>')
+      .alias('星铁绑定')
+      .action(async ({ session }, uid) => {
+        if (!uid) {
+          session.send('请输入uid')
+          uid = await session.prompt()
         }
-        if(!url) return
-        url = url.replace(/&amp;/g, "&")
-        this.data = (await this.fetchUigfRecords(url, false)).list 
-        if (!this.data) {
-          console.log('获取失败，链接无效或已过期，请重新抓取')
-        }
-        const text = this.data2text()
-        const uid = this.data[0][0].uid
-        const account: GachaLog.Database = (await this.ctx.database.get('starrail', { uid: [uid] }))[0];
+        if (!uid) return
         const session_user: Session<"id"> = session as Session<"id">
-        // 更新数据库
-        if (account) {
-          await this.ctx.database.set('user',{id:[session_user.user.id]},{starrail_uid:uid})
-          await this.ctx.database.set('starrail', { uid: [uid] }, { uuid: [...account.uuid, session.userId], link: url })
-        } else {
-          await this.ctx.database.create('starrail', { uid: uid, uuid: [session.userId], link: url })
-        }
-        return '绑定成功'+text
+        await this.ctx.database.set('user', { id: [session_user.user.id] }, { starrail_uid: uid })
+        return '绑定成功'
       })
+    ctx.command('sr.url <url:text>')
+      .action(async ({ session }, url) => this.bind_url(session, url))
     ctx.command('sr.抽卡分析 <type:number>')
       .option('uuid', '-u <uuid:string>')
-      .action(async ({ session, options }, type) => {
-        this.type = type ? type : 11
-        let link: string
-        try {
-          if (options.uuid) {
-            link = (await this.ctx.database.get('starrail', { uid: [options.uuid] }))[0].link;
-          } else {
-            const session_user: Session<"id"> = session as Session<"id">
-            const starrail_uid: string = (await ctx.database.get('user', { id: [session_user.user.id] }))[0].starrail_uid
-            link = (await this.ctx.database.get('starrail', { uid: [starrail_uid] }))[0].link;
-            if (!link) {
-              return '未绑定url'
-            }
-          }
-        } catch (e) {
-          return '未绑定url'
-        }
-        this.data = (await this.fetchUigfRecords(link, false)).list
-        if (!this.data) {
-          console.log('获取失败，链接无效或已过期，请重新抓取')
-        }
-        const text = this.data2text()
-        return text
-      })
+      .action(async ({ session, options }, type) => this.do_anna(session, options, type))
+    ctx.command('sr.更新抽卡')
+      .option('uuid', '-u <uuid:string>')
+      .action(async ({ session, options }) => this.update(session, options))
 
+  }
+  async update(session: Session, options: any = {}) {
+    let link: string
+    let uid: string
+    const map = ['1', '2', '11', '12']
+    const count = {
+      '1': 0,
+      '2': 0,
+      '11': 0,
+      '12': 0
+    }
+    if (options.uuid) {
+      uid = options.uuid
+    } else {
+      const session_user: Session<"id"> = session as Session<"id">
+      uid = (await this.ctx.database.get('user', { id: [session_user.user.id] }))[0].starrail_uid
+      if (!uid) {
+        return session.text('gachalog.messages.uid-no')
+      }
+    }
+    const hhistory = (await this.ctx.database.get('starrail', { uid: [uid] }))[0].history;
+    if (hhistory) {
+      const history_data = JSON.parse(hhistory)
+      for (var i in history_data) {
+        count[String(i)] = history_data[i].length;
+      }
+    }
 
+    try {
+      link = (await this.ctx.database.get('starrail', { uid: [uid] }))[0].link;
+      if (!link) {
+        return session.text('gachalog.messages.url-no')
+      }
+    } catch (e) {
+      logger.error(String(e))
+      return session.text('gachalog.messages.url-no')
+    }
+    this.data = (await this.fetchUigfRecords(link, false)).list
+    if (!this.data) {
+      return session.text('gachalog.messages.url-err')
+    }
+    let text: string = '更新成功\n'
+    for (var i in this.data) {
+      text += `${gacha[map[i]]}: ${this.data[i].length - count[map[i]]}发\n`
+    }
+    const history = JSON.stringify(this.data)
+    this.ctx.database.set('starrail', { uid: [uid] }, { history: history })
+    return text
+  }
+  async do_anna(session: Session, options: any = {}, type: number) {
+    console.log('123123')
+    this.type = type ? type : 11
+    let uid: string
+    if (options.uuid) {
+      uid = options.uuid
+    } else {
+      const session_user: Session<"id"> = session as Session<"id">
+      console.log(uid)
+      uid = (await this.ctx.database.get('user', { id: [session_user.user.id] }))[0].starrail_uid
+      if (!uid) {
+        return session.text('gachalog.messages.uid-no')
+      }
+    }
+    const history = (await this.ctx.database.get('starrail', { uid: [uid] }))[0].history;
+    if (!history) {
+      return '不存在抽卡记录，请发送: sr.更新抽卡记录'
+    }
+    console.log(history)
+    this.data = JSON.parse(history)
+    const text = this.data2text()
+    return text
+  }
+  async bind_url(session: Session, url: string) {
+    let uid: string
+    if (!url) {
+      session.send('请输入url')
+      url = await session.prompt()
+    }
+    if (!url) return
+    url = url.replace(/&amp;/g, "&")
+    try {
+      const data = (await this.ctx.http.get(url)).data.list
+
+      if (!data) {
+        return session.text('gachalog.messages.url-err')
+      }
+
+      console.log(data[0])
+      uid = data[0].uid ? data[0].uid : data[0][0].uid
+      const account: GachaLog.Database = (await this.ctx.database.get('starrail', { uid: [uid] }))[0];
+      const session_user: Session<"id"> = session as Session<"id">
+      // 更新数据库
+      await this.ctx.database.set('user', { id: [session_user.user.id] }, { starrail_uid: uid })
+      if (account) {
+        await this.ctx.database.set('starrail', { uid: [uid] }, { uuid: [...account.uuid, session.userId], link: url })
+      } else {
+        await this.ctx.database.create('starrail', { uid: uid, uuid: [session.userId], link: url })
+      }
+    } catch (e) {
+      logger.error(String(e))
+      return String(e)
+    }
+    const text = await this.update(session, { uuid: uid })
+    return '绑定成功\n' + text
   }
   data2text() {
     this.uid = this.data[0][0].uid
@@ -157,7 +232,7 @@ class GachaLog {
   ) {
     let page = 1;
 
-    console.log(`开始获取 第 ${page} 页...`);
+    logger.info(`开始获取 第 ${page} 页...`);
     const data = await this.ctx.http.get(this.createURL(link, type, 0, page, 20, useProxy));
     // 使用axios发送GET请求，并获取响应的data字段
 
@@ -165,7 +240,7 @@ class GachaLog {
     const result = []
 
     if (!data.data?.list) {
-      console.log('链接可能已失效，请重新抓取！')
+      logger.info('链接可能已失效，请重新抓取！')
     }
 
     result.push(...data.data.list)
@@ -174,7 +249,7 @@ class GachaLog {
     while (true) {
       page += 1
       await wait(200)
-      console.log((`开始获取 第 ${page} 页...`))
+      logger.info((`开始获取 第 ${page} 页...`))
       const data = await this.ctx.http.get(this.createURL(link, type, endId, page, 20, useProxy))
       if (!data?.data || data?.data?.list?.length === 0) {
         break
@@ -190,10 +265,10 @@ class GachaLog {
     const res = []
 
     for (const [type, name] of Object.entries(gacha)) {
-      console.log(`开始获取 「${name}」 跃迁记录...`)
+      logger.info(`开始获取 「${name}」 跃迁记录...`)
       const records = await this.fetchRecordsByGachaType(link, type, useProxy)
       res.push(records)
-      console.log(`共获取到 ${records.length} 条 「${name}」 记录`)
+      logger.info(`共获取到 ${records.length} 条 「${name}」 记录`)
     }
 
     return res
@@ -466,6 +541,7 @@ namespace GachaLog {
     uid: string
     uuid?: string[]
     link?: string
+    history?: string
   }
   export interface Role {
     uid: string
