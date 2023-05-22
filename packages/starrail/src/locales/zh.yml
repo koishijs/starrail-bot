@@ -1,0 +1,37 @@
+commands:
+  genshin:
+    description: 《崩坏：星穹铁道》指令
+    uid:
+      description: 操作《崩坏：星穹铁道》 uid
+      option:
+        list: 列出已绑定的 uid
+        bind: 绑定 uid
+        user: 授权一位用户可以使用你绑定的 uid 进行操作
+        append: 添加这个 uid
+        remove: 移除这个 uid （组合使用`-ru @user`则移除该用户的授权）
+        device: 重置该 uid 的虚拟设备信息（仅用于尝试解除验证码风控）
+        default: 将该 uid 设置为默认 uid
+      messages:
+        fail-binded: 这个 uid 已经被其他人绑定过了
+        fail-none: 你还没有绑定过 uid，请回复 uid 以绑定
+        fail-unbind: 这个 uid 还没有被绑定过，回复句号以绑定这个 uid
+        fail-lackuid: 你应该指定 uid 以绑定，请回复该 uid
+        fail-notuid: 这不是正确的 uid
+        fail-dot: 请回复句号
+        list: 当前用户已绑定的 uid 有<br/>
+        list-def: （默认）
+        bind-def: 已设置 {0} 为默认 uid
+        bind-isdef: "{0} 已经是默认 uid 了"
+        bind-saved: uid{0} 绑定成功！
+        bind-added: "添加成功，你目前已绑定以下 uid: "
+        bind-removed: 该 uid 已取消绑定
+        device-reset: 已重置 {0} 的虚拟设备信息
+        timeout: 等待超时
+    cookie:
+      description: 绑定你的米游社小饼干
+      option:
+        bind: 绑定这个 cookie
+        remove: 移除 cookie
+      messages:
+        binded: cookie 已绑定到 {0}
+        removed: 已取消 {0} 的 cookie

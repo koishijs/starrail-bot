@@ -1,57 +1,60 @@
-import { Context, Schema } from 'koishi'
+import { Command, Context, Schema, Service } from 'koishi'
+import StarRailDatabase from './internal/database'
+import StarRailCommander from './internal/command'
 
-import Atlas from '../../atlas';
-import GachaLog from '../../gachaLog';
-import * as Code from '../../code'
-
-
-
-export const name = 'starrail'
-
-class StarRail {
-  constructor(ctx: Context, config: StarRail.Config) {
-    if (config.Atlas.enabled)
-      ctx.plugin(Atlas, config.Atlas)
-    if (config.Code.enabled)
-      ctx.plugin(Code, config.Code)
-    if (config.GachaLog.enabled)
-      ctx.plugin(GachaLog, config.GachaLog)
+declare module 'koishi' {
+  interface Context {
+    starrail: StarRail
   }
 }
 
-namespace StarRail {
-   export interface PluginEnableConfig {
-        enabled: boolean
-      }
-   export interface Config {
-        superAdminQQ?: string[]
-        Atlas?: Atlas.Config & PluginEnableConfig
-        Code?: Code.Config & PluginEnableConfig
-        GachaLog?: GachaLog.Config & PluginEnableConfig
-      }
-    export const pluginLoad = <T>(schema: Schema<T>): Schema<T & PluginEnableConfig> =>
-      Schema.intersect([
-        Schema.object({
-          enabled: Schema.boolean().default(false).description('是否启用插件'),
-        }),
-        Schema.union([
-          Schema.object({
-            enabled: Schema.const(true).required(),
-            ...schema.dict,
-          }),
-          Schema.object({
-            enabled: Schema.const(false),
-          }),
-        ]) as Schema<T>,
-      ])
-    
+type CommandType = 'subset' | 'derive'
 
-  export const Config:Schema = Schema.object({
-    superAdminQQ: Schema.array(String).description('超级管理员QQ号 (必填)'),
-    Atlas: pluginLoad(Atlas.Config).description('图鉴'),
-    Code: pluginLoad(Code.Config).description('前瞻直播兑换码'),
-    GachaLog: pluginLoad(GachaLog.Config).description('抽卡分析'),
-  })
+class StarRail extends Service {
+  constructor(private app: Context, private config: StarRail.Config) {
+    super(app, 'starrail', true)
+    app.on('ready', this.ready(app))
+  }
+
+  protected ready(ctx: Context) {
+    // Pre-processing without entering the event hook callback
+    ctx.command('sr').action(async ({ session }) => session.execute('help sr'))
+    return async () => {
+      // apply internal plugins.
+      ctx.plugin(StarRailDatabase)
+      ctx.plugin(StarRailCommander, this.config)
+    }
+  }
+
+  private defineCommand(command: string, type: CommandType, ...args: any[]): Command {
+    const def = type === 'subset' ? `genshin.${command}` : `genshin/${command}`
+    const desc = typeof args[0] === 'string' ? args.shift() as string : ''
+    const config = args[0] as Command.Config || {}
+    return this.app.command(def, desc, config)
+  }
+
+  subcommand<D extends string>(def: D, config?: Command.Config): Command
+  subcommand<D extends string>(def: D, desc: string, config?: Command.Config): Command
+  public subcommand(def: string, ...args: any[]) {
+    return this.defineCommand(def, 'subset', ...args)
+  }
+
+  dercommand<D extends string>(def: D, config?: Command.Config): Command
+  dercommand<D extends string>(def: D, desc: string, config?: Command.Config): Command
+  public dercommand(def: string, ...args: any[]) {
+    return this.defineCommand(def, 'derive', ...args)
+  }
+
+  /**
+   * WIP
+   */
+  getUid() { }
+  setUid() { }
+}
+
+namespace StarRail {
+  export interface Config { }
+  export const Config: Schema<Config> = Schema.intersect([])
 }
 
 export default StarRail
