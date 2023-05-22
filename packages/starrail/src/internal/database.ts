@@ -8,21 +8,21 @@ declare module 'koishi' {
         sr: number[]
     }
     interface Tables {
-        star_rail: HomkaiStarRail
+        star_rail: StarRail
     }
 }
 
-export interface HomkaiStarRail {
+export interface StarRail {
     id: number
     uid: string
     doken: string // DS Token => doken
     cookie: string
 }
 
-export namespace HomkaiStarRail {
-    export type Field = keyof HomkaiStarRail
+export namespace StarRail {
+    export type Field = keyof StarRail
     export const fields: Field[] = []
-    export type Observed<K extends Field = Field> = OB<Pick<HomkaiStarRail, K>, Promise<void>>
+    export type Observed<K extends Field = Field> = OB<Pick<StarRail, K>, Promise<void>>
 }
 
 class StarRailDatabase extends DatabaseService {

@@ -1,17 +1,18 @@
-import { Command, Context, Schema, Service } from 'koishi'
-import StarRailDatabase from './internal/database'
-import StarRailCommander from './internal/command'
+import { Command, Context, Dict, Schema, Service } from 'koishi'
+import { StarRailPlugin } from './internal/plugin'
+import SRDB from './internal/database'
+import SRCmd from './internal/command'
 
 declare module 'koishi' {
   interface Context {
-    starrail: StarRail
+    starrail: HomkaiStarRail
   }
 }
 
 type CommandType = 'subset' | 'derive'
 
-class StarRail extends Service {
-  constructor(private app: Context, private config: StarRail.Config) {
+class HomkaiStarRail extends Service {
+  constructor(private app: Context, private config: HomkaiStarRail.Config) {
     super(app, 'starrail', true)
     app.on('ready', this.ready(app))
   }
@@ -21,8 +22,8 @@ class StarRail extends Service {
     ctx.command('sr').action(async ({ session }) => session.execute('help sr'))
     return async () => {
       // apply internal plugins.
-      ctx.plugin(StarRailDatabase)
-      ctx.plugin(StarRailCommander, this.config)
+      ctx.plugin(SRDB)
+      ctx.plugin(SRCmd, this.config)
     }
   }
 
@@ -52,9 +53,11 @@ class StarRail extends Service {
   setUid() { }
 }
 
-namespace StarRail {
-  export interface Config { }
-  export const Config: Schema<Config> = Schema.intersect([])
+namespace HomkaiStarRail {
+  export type Config = StarRailPlugin.Config
+  export const Config: Schema<Config> = StarRailPlugin.Config
 }
 
-export default StarRail
+export * from './internal/database'
+
+export default HomkaiStarRail
