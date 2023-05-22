@@ -5,14 +5,14 @@ import SRCmd from './internal/command'
 
 declare module 'koishi' {
   interface Context {
-    starrail: HomkaiStarRail
+    starrail: HonkaiStarRail
   }
 }
 
 type CommandType = 'subset' | 'derive'
 
-class HomkaiStarRail extends Service {
-  constructor(private app: Context, private config: HomkaiStarRail.Config) {
+class HonkaiStarRail extends Service {
+  constructor(private app: Context, private config: HonkaiStarRail.Config) {
     super(app, 'starrail', true)
     app.on('ready', this.ready(app))
   }
@@ -53,11 +53,11 @@ class HomkaiStarRail extends Service {
   setUid() { }
 }
 
-namespace HomkaiStarRail {
+namespace HonkaiStarRail {
   export type Config = StarRailPlugin.Config
   export const Config: Schema<Config> = StarRailPlugin.Config
 }
 
 export * from './internal/database'
 
-export default HomkaiStarRail
+export default HonkaiStarRail
