@@ -1,7 +1,6 @@
 import { Command, Context, Dict, Schema, Service } from 'koishi'
-import { StarRailPlugin } from './internal/plugin'
-import SRDB from './internal/database'
-import SRCmd from './internal/command'
+import StarRailDatabase from './internal/database'
+import StarRailCommand from './internal/command'
 
 declare module 'koishi' {
   interface Context {
@@ -18,12 +17,11 @@ class HonkaiStarRail extends Service {
   }
 
   protected ready(ctx: Context) {
-    // Pre-processing without entering the event hook callback
     ctx.command('sr').action(async ({ session }) => session.execute('help sr'))
     return async () => {
       // apply internal plugins.
-      ctx.plugin(SRDB)
-      ctx.plugin(SRCmd, this.config)
+      ctx.plugin(StarRailDatabase)
+      // ctx.plugin(StarRailCommand, this.config)
     }
   }
 
@@ -54,8 +52,14 @@ class HonkaiStarRail extends Service {
 }
 
 namespace HonkaiStarRail {
-  export type Config = StarRailPlugin.Config
-  export const Config: Schema<Config> = StarRailPlugin.Config
+  export interface Config {
+
+  }
+  export const Config: Schema<Config> = Schema.intersect([
+    Schema.object({
+
+    })
+  ])
 }
 
 export * from './internal/database'

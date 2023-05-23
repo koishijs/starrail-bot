@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "koishi-plugin-starrail": ["packages/starrail/src"],
+      "koishi-plugin-starrail": ["packages/core/src"],
       "koishi-plugin-starrail-*": ["packages/*/src"],
     },
   },

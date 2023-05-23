@@ -13,6 +13,9 @@
     "priview": true,
     "description": {
       "zh": "（开发中的版本）用于 Koishi 的《崩坏：星穹铁道》游戏工具箱"
+    },
+    "service": {
+      "implements": ["starrail"]
     }
   },
   "keywords": [
@@ -25,9 +28,9 @@
     "miyoushe"
   ],
   "dependencies": {
-    "oyohim": "^0.0.0"
+    
   },
   "peerDependencies": {
-    "koishi": "^4.12.6"
+    "koishi": "^4.12.0"
   }
 }

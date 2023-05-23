@@ -1,22 +1,9 @@
-import { Context, Schema } from "koishi";
-import { StarRailPlugin } from "../plugin";
+import { Context } from "koishi";
+import HonkaiStarRail from "..";
 
-declare module '../plugin' {
-    namespace StarRailPlugin {
-        interface Config {
-
-        }
-    }
-}
-
-StarRailPlugin.defineSchema({
-
-}, '命令设置')
-
-export default class StarRailCommander extends StarRailPlugin {
+export default class StarRailCommander {
     static using = ['starrail']
-    constructor(private ctx: Context, private cfg: StarRailPlugin.Config) {
-        super()
+    constructor(ctx: Context, private config: HonkaiStarRail.Config) {
         //#region commands
         ctx.starrail.subcommand('uid <uid>')
             .option('default', '-d')

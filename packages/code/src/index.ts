@@ -2,7 +2,7 @@ import { Context, Logger, Quester, Schema, Session, Time } from 'koishi'
 
 export const name = 'starrail-code'
 
-
+export const using = ['starrail']
 
 export const usage = `
 ## 使用说明

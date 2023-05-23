@@ -1,5 +1,5 @@
 # koishi-plugin-starrail-code
 
-[![npm](https://img.shields.io/npm/v/koishi-plugin-genshin-code?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-genshin-code)
+[![npm](https://img.shields.io/npm/v/koishi-plugin-starrail-code?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-starrail-code)
 
-get Honkai: Star Rail live code
+Get live code for Honkai: Star Rail
