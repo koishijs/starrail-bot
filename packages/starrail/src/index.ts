@@ -28,7 +28,7 @@ class HonkaiStarRail extends Service {
   }
 
   private defineCommand(command: string, type: CommandType, ...args: any[]): Command {
-    const def = type === 'subset' ? `genshin.${command}` : `genshin/${command}`
+    const def = type === 'subset' ? `sr.${command}` : `sr/${command}`
     const desc = typeof args[0] === 'string' ? args.shift() as string : ''
     const config = args[0] as Command.Config || {}
     return this.app.command(def, desc, config)

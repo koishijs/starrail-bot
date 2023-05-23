@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-starrail",
-  "description": "A koishi plugin for Honkai Star Rail",
-  "version": "0.0.0",
+  "description": "Search Honkai Star Rail user data for koishi",
+  "version": "1.0.0-alpha.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -10,16 +10,23 @@
   ],
   "scripts": {},
   "koishi": {
-    "hidden": true,
+    "priview": true,
     "description": {
-      "zh": "星穹铁道"
+      "zh": "（开发中的版本）用于 Koishi 的《崩坏：星穹铁道》游戏工具箱"
     }
   },
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "starrail",
+    "honkai",
+    "mihoyo",
+    "miyoushe"
   ],
+  "dependencies": {
+    "oyohim": "^0.0.0"
+  },
   "peerDependencies": {
     "koishi": "^4.12.6"
   }
