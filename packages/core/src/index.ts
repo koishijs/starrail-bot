@@ -1,6 +1,7 @@
-import { Command, Context, Dict, Schema, Service } from 'koishi'
+import { Command, Context, Dict, Schema, Service, Session, User } from 'koishi'
 import StarRailDatabase from './internal/database'
 import StarRailCommand from './internal/command'
+import { StarRail } from './internal/database'
 
 declare module 'koishi' {
   interface Context {
@@ -47,8 +48,13 @@ class HonkaiStarRail extends Service {
   /**
    * WIP
    */
-  getUid() { }
-  setUid() { }
+  async getUid(id: number): Promise<Pick<StarRail, "uid">[]> {
+    return await this.ctx.database.get('star_rail', id)
+  }
+  async setUid(id: number, sr_uid: string, default_: boolean = false): Promise<void> {
+    if (default_ === true) await this.ctx.database.set('user', id, { sr_uid: sr_uid })
+    await this.ctx.database.set('star_rail', id, { uid: sr_uid })
+  }
 }
 
 namespace HonkaiStarRail {

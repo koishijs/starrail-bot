@@ -1,5 +1,7 @@
 import { Context, Schema, Session, h, Dict } from 'koishi'
 export const name = 'star-rail-atlas'
+import { } from 'koishi-plugin-starrail'
+export const using = ['starrail']
 import { resolve } from "path";
 import { pathToFileURL } from "url";
 import fs from 'fs';
@@ -181,7 +183,7 @@ class Atlas {
             }
             return h.image(img_url);
         })
-        // ctx.command('update', '更新图鉴索引').action(({ session }) => this.update(session))
+        ctx.starrail.subcommand('更新图鉴', '更新图鉴索引').action(({ session }) => this.update(session))
     }
     async update(session: Session) {
         const res = await this.ctx.http.get('https://gitee.com/Nwflower/star-rail-atlas/raw/master/path.json', { responseType: 'arraybuffer' })

@@ -5,15 +5,12 @@ plugins:
   database-sqlite:ldzjlo: {}
   config: {}
   sandbox: {}
+  dataview:yp1kip: {}
   group:develop:
     $if: env.NODE_ENV === 'development'
     hmr:
-      root: '.'
-  starrail:e33l83:
-    Atlas:
-      enabled: true
-    Code:
-      enabled: true
-    GachaLog:
-      enabled: true
+      root: .
+  starrail: {}
   help:m0irfa: {}
+  starrail-code:chvnsp: {}
+  starrail-gachalog:jup7z9: {}

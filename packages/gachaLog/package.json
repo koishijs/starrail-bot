@@ -1,6 +1,6 @@
 {
-  "name": "koishi-plugin-sr-gachalog",
-  "description": "星穹铁道抽卡分析",
+  "name": "koishi-plugin-starrail-gachalog",
+  "description": "✨ 获取《崩坏：星穹铁道》抽卡分析",
   "version": "0.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -21,6 +21,15 @@
     "崩铁"
   ],
   "peerDependencies": {
-    "koishi": "^4.11.9"
+    "koishi": "^4.11.9",
+    "koishi-plugin-starrail": "^1.0.0-alpha.0"
+  },
+  "koishi": {
+    "description": {
+      "zh": "✨ 获取《崩坏：星穹铁道》抽卡分析"
+    },
+    "service": {
+      "required": ["starrail"]
+    }
   }
 }

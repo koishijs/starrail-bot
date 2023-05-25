@@ -1,55 +1,34 @@
 import { Context, Session, Schema, Logger } from "koishi";
-export const gacha = {
-  '1': '群星跃迁',
-  '2': '新手跃迁',
-  '11': '限定跃迁',
-  '12': '光锥跃迁'
-} as const;
+import { StarRail } from "koishi-plugin-starrail"
+import * as GachaLogType from "./type"
+import * as Analyse from './analyse'
+import { fetchUigfRecords, gacha } from './api'
+export const logger = new Logger('sr.抽卡分析')
+export const using = ['starrail']
 
-export const logger = new Logger('抽卡分析')
 declare module 'koishi' {
-  interface Tables {
-    starrail: GachaLog.Database
+  interface StarRail {
+    id: number
+    link: string
+    gachaLog_history: GachaLogType.Role[][]
   }
 }
-declare module 'koishi' {
-  interface User {
-    starrail_uid: string
-  }
-}
-
 
 class GachaLog {
-  role: GachaLog.Role
+  role: GachaLogType.Role
   uid: string
   typeName: string
-  all: GachaLog.Role[]
-  data: GachaLog.Role[][]
+  all: GachaLogType.Role[]
+  data: GachaLogType.Role[][]
   type: number
   constructor(private ctx: Context) {
-    ctx.model.extend('user', {
-      starrail_uid: 'string'
+    ctx.model.extend('star_rail', {
+      id: 'unsigned',
+      link: 'string',
+      gachaLog_history: 'json'
     })
-    ctx.before('attach-user', async ({ }, fields) => {
-      fields.add('id')
-    })
-
-
-    ctx.model.extend('starrail', {
-      // 各字段类型
-      id: 'integer',
-      uid: 'string',  // 游戏Id
-      uuid: 'list', // 用户Id
-      link: 'string', // Gachalog url
-      history: 'string' // 历史记录
-    }, {
-      primary: 'id', //设置 id 为主键
-      unique: ['id', 'uid'], //设置 uid及id 为唯一键
-      autoInc: true
-    })
-
     ctx.i18n.define('zh', require('./locales/zh'))
-    ctx.command('sr.bind <uir:string>')
+    ctx.starrail.subcommand('bind <uid:string>')
       .alias('星铁绑定')
       .action(async ({ session }, uid) => {
         if (!uid) {
@@ -58,56 +37,53 @@ class GachaLog {
         }
         if (!uid) return
         const session_user: Session<"id"> = session as Session<"id">
-        await this.ctx.database.set('user', { id: [session_user.user.id] }, { starrail_uid: uid })
+        await this.ctx.starrail.setUid(session_user.user.id, uid, true)
         return '绑定成功'
       })
-    ctx.command('sr.url <url:text>')
+    ctx.starrail.subcommand('抽卡链接 <url:text>')
       .action(async ({ session }, url) => this.bind_url(session, url))
-    ctx.command('sr.抽卡分析 <type:number>')
-      .option('uuid', '-u <uuid:string>')
+    ctx.starrail.subcommand('抽卡分析 <type:number>')
+      .option('uid', '-u <uid:string>')
       .action(async ({ session, options }, type) => this.do_anna(session, options, type))
-    ctx.command('sr.更新抽卡')
-      .option('uuid', '-u <uuid:string>')
+    ctx.starrail.subcommand('更新抽卡')
+      .option('uid', '-u <uid:string>')
       .action(async ({ session, options }) => this.update(session, options))
 
   }
-  async update(session: Session, options: any = {}) {
-    let link: string
-    let uid: string
-    const map = ['1', '2', '11', '12']
+
+  /**
+   * 更新抽卡记录
+   * @param session 
+   * @param options 
+   * @returns 
+   */
+  async update(session: Session, options: GachaLogType.GachaLogOpt, link?: string) {
+    const { user: { id } }: Session<"id"> = session as Session<"id">
+
+    const uid: string = options.uid ? options.uid : (await this.ctx.starrail.getUid(id))[0]?.uid
+    if (!uid) {
+      return session.text('gachalog.messages.uid-no')
+    }
+    if (!link) {
+      link = (await this.ctx.database.get('star_rail', id))[0]?.link;
+      if (!link) {
+        return session.text('gachalog.messages.url-no')
+      }
+    }
+    const map: string[] = ['1', '2', '11', '12']
     const count = {
       '1': 0,
       '2': 0,
       '11': 0,
       '12': 0
     }
-    if (options.uuid) {
-      uid = options.uuid
-    } else {
-      const session_user: Session<"id"> = session as Session<"id">
-      uid = (await this.ctx.database.get('user', { id: [session_user.user.id] }))[0].starrail_uid
-      if (!uid) {
-        return session.text('gachalog.messages.uid-no')
-      }
-    }
-    const hhistory = (await this.ctx.database.get('starrail', { uid: [uid] }))[0].history;
-    if (hhistory) {
-      const history_data = JSON.parse(hhistory)
+    const history_data: GachaLogType.Role[][] = (await this.ctx.database.get('star_rail', id))[0]?.gachaLog_history;
+    if (history_data) {
       for (var i in history_data) {
         count[String(i)] = history_data[i].length;
       }
     }
-
-    try {
-      link = (await this.ctx.database.get('starrail', { uid: [uid] }))[0].link;
-      if (!link) {
-        return session.text('gachalog.messages.url-no')
-      }
-    } catch (e) {
-      logger.error(String(e))
-      return session.text('gachalog.messages.url-no')
-    }
-    this.data = (await this.fetchUigfRecords(link, false)).list
+    this.data = (await fetchUigfRecords(this.ctx, link, false)).list
     if (!this.data) {
       return session.text('gachalog.messages.url-err')
     }
@@ -115,34 +91,47 @@ class GachaLog {
     for (var i in this.data) {
       text += `${gacha[map[i]]}: ${this.data[i].length - count[map[i]]}发\n`
     }
-    const history = JSON.stringify(this.data)
-    this.ctx.database.set('starrail', { uid: [uid] }, { history: history })
-    return text
-  }
-  async do_anna(session: Session, options: any = {}, type: number) {
-    console.log('123123')
-    this.type = type ? type : 11
-    let uid: string
-    if (options.uuid) {
-      uid = options.uuid
+    if ((await this.ctx.starrail.getUid(id)).length < 1) {
+      this.ctx.database.create('star_rail', { gachaLog_history: this.data })
     } else {
-      const session_user: Session<"id"> = session as Session<"id">
-      console.log(uid)
-      uid = (await this.ctx.database.get('user', { id: [session_user.user.id] }))[0].starrail_uid
-      if (!uid) {
-        return session.text('gachalog.messages.uid-no')
-      }
+      this.ctx.database.set('star_rail', id, { gachaLog_history: this.data })
     }
-    const history = (await this.ctx.database.get('starrail', { uid: [uid] }))[0].history;
-    if (!history) {
-      return '不存在抽卡记录，请发送: sr.更新抽卡记录'
-    }
-    console.log(history)
-    this.data = JSON.parse(history)
-    const text = this.data2text()
     return text
   }
+
+  /**
+   * 从数据库读取历史抽卡并分析
+   * @param session 
+   * @param options 
+   * @param type 
+   * @returns 
+   */
+
+  async do_anna(session: Session, options: GachaLogType.GachaLogOpt, type: number) {
+    this.type = type ? type : 11
+    let { user: { id } }: Session<"id"> = session as Session<"id">
+    const uid: string = options.uid
+    if (uid) {
+      id = (await this.ctx.database.get('user', { sr_uid: [uid] }, ['id']))[0]?.id
+      if (!id) return session.text('gachalog.messages.uid-no')
+    }
+    const history: GachaLogType.Role[][] = (await this.ctx.database.get('star_rail', id))[0]?.gachaLog_history as GachaLogType.Role[][];
+    if (!history) {
+      return '不存在抽卡记录，请发送: sr.更新抽卡'
+    }
+    this.data = history
+    const text: string = this.data2text()
+    return text
+  }
+
+  /**
+   * 绑定抽卡记录链接
+   * @param session 
+   * @param url 
+   * @returns 
+   */
   async bind_url(session: Session, url: string) {
+    const { user: { id } }: Session<"id"> = session as Session<"id">
     let uid: string
     if (!url) {
       session.send('请输入url')
@@ -151,28 +140,23 @@ class GachaLog {
     if (!url) return
     url = url.replace(/&amp;/g, "&")
     try {
-      const data = (await this.ctx.http.get(url)).data.list
+      const data: GachaLogType.Role[] = (await this.ctx.http.get(url)).data?.list
 
       if (!data) {
         return session.text('gachalog.messages.url-err')
       }
-
-      console.log(data[0])
       uid = data[0].uid ? data[0].uid : data[0][0].uid
-      const account: GachaLog.Database = (await this.ctx.database.get('starrail', { uid: [uid] }))[0];
-      const session_user: Session<"id"> = session as Session<"id">
+      const account: Pick<StarRail, "uid">[] = await this.ctx.starrail.getUid(id)
       // 更新数据库
-      await this.ctx.database.set('user', { id: [session_user.user.id] }, { starrail_uid: uid })
-      if (account) {
-        await this.ctx.database.set('starrail', { uid: [uid] }, { uuid: [...account.uuid, session.userId], link: url })
-      } else {
-        await this.ctx.database.create('starrail', { uid: uid, uuid: [session.userId], link: url })
+      if (account.length < 1) {
+        await this.ctx.starrail.setUid(id, uid, true)
       }
+      await this.ctx.database.set('star_rail', id, { link: url })
     } catch (e) {
       logger.error(String(e))
       return String(e)
     }
-    const text = await this.update(session, { uuid: uid })
+    const text = await this.update(session, { uid: uid }, url)
     return '绑定成功\n' + text
   }
   data2text() {
@@ -197,287 +181,16 @@ class GachaLog {
         this.typeName = '武器'
         break
     }
-    const ans: GachaLog.Analyse_Res = this.analyse()
+    const ans: GachaLogType.Analyse_Res = Analyse.analyse(this.all, this.role)
     const res = this.randData(ans)
 
-    const text = JSON.stringify(res)
+    const text = JSON.stringify(res, null, 2)
     return text
   }
-  createURL(
-    link: string,
-    type: string | number = 1,
-    endId: number | string = 0,
-    page: number = 1,
-    size: number = 10,
-    useProxy = false
-  ) {
-    const url = new URL(link);
 
-    url.searchParams.set('size', String(size));
-    url.searchParams.set('page', String(page));
-    url.searchParams.set('gacha_type', String(type));
-    url.searchParams.set('end_id', String(endId));
-    if (useProxy) {
-      const host = url.host;
-      url.host = 'proxy.viki.moe';
-      url.searchParams.set('proxy-host', host);
-    }
-
-    return url.href;
-  }
-  async fetchRecordsByGachaType(
-    link: string,
-    type: number | string,
-    useProxy = false
-  ) {
-    let page = 1;
-
-    logger.info(`开始获取 第 ${page} 页...`);
-    const data = await this.ctx.http.get(this.createURL(link, type, 0, page, 20, useProxy));
-    // 使用axios发送GET请求，并获取响应的data字段
-
-    // 接下来可以根据需要处理响应数据  
-    const result = []
-
-    if (!data.data?.list) {
-      logger.info('链接可能已失效，请重新抓取！')
-    }
-
-    result.push(...data.data.list)
-
-    let endId = result[result.length - 1].id
-    while (true) {
-      page += 1
-      await wait(200)
-      logger.info((`开始获取 第 ${page} 页...`))
-      const data = await this.ctx.http.get(this.createURL(link, type, endId, page, 20, useProxy))
-      if (!data?.data || data?.data?.list?.length === 0) {
-        break
-      }
-
-      result.push(...data.data.list)
-      endId = result[result.length - 1].id
-    }
-
-    return result
-  }
-  async fetchGachaRecords(link: string, useProxy = false) {
-    const res = []
-
-    for (const [type, name] of Object.entries(gacha)) {
-      logger.info(`开始获取 「${name}」 跃迁记录...`)
-      const records = await this.fetchRecordsByGachaType(link, type, useProxy)
-      res.push(records)
-      logger.info(`共获取到 ${records.length} 条 「${name}」 记录`)
-    }
-
-    return res
-  }
-
-
-  async fetchUigfRecords(link: string, useProxy = false) {
-    const list = await this.fetchGachaRecords(link, useProxy)
-    const uid = list?.[0]?.[0]?.uid
-
-    if (!uid) {
-      return null
-    }
-    const info = {
-      uid,
-      lang: 'zh-CN',
-      export_timestamp: timestamp(),
-      export_app: pkg?.name,
-      export_app_version: `v${pkg?.version}`,
-      uigf_version: 'v2.3'
-    }
-
-    return { info, list } as const
-  }
-  get_Data() {
-
-  }
-  // 参考自云崽
-  /** 统计计算记录 */
-  analyse(): GachaLog.Analyse_Res {
-    let fiveLog = []
-    let fourLog = []
-    let fiveNum = 0
-    let fourNum = 0
-    let fiveLogNum = 0
-    let fourLogNum = 0
-    let noFiveNum = 0
-    let noFourNum = 0
-    let wai = 0 // 歪
-    let weaponNum = 0
-    let weaponFourNum = 0
-    let allNum = this.all.length
-    let bigNum = 0
-    for (let val of this.all) {
-
-      this.role = val
-      if (val.rank_type == '4') {
-        fourNum++
-        if (noFourNum == 0) {
-          noFourNum = fourLogNum
-        }
-        fourLogNum = 0
-        if (fourLog[val.name]) {
-          fourLog[val.name]++
-        } else {
-          fourLog[val.name] = 1
-        }
-        if (val.item_type == '光锥') {
-          weaponFourNum++
-        }
-      }
-      fourLogNum++
-
-      if (val.rank_type == '5') {
-        fiveNum++
-        if (fiveLog.length > 0) {
-          fiveLog[fiveLog.length - 1].num = fiveLogNum
-        } else {
-          noFiveNum = fiveLogNum
-        }
-        fiveLogNum = 0
-        let isUp = false
-        // 歪了多少个
-        if (val.item_type == '角色') {
-          if (this.checkIsUp()) {
-            isUp = true
-          } else {
-            wai++
-          }
-        } else {
-          weaponNum++
-        }
-
-        fiveLog.push({
-          name: val.name,
-          abbrName: val.name,
-          item_type: val.item_type,
-          num: 0,
-          isUp
-        })
-      }
-      fiveLogNum++
-    }
-    if (fiveLog.length > 0) {
-      fiveLog[fiveLog.length - 1].num = fiveLogNum
-
-      // 删除未知五星
-      for (let i in fiveLog) {
-        if (fiveLog[i].name == '未知') {
-          allNum = allNum - fiveLog[i].num
-          fiveLog.splice(fiveLog[i], 1)
-          fiveNum--
-        } else {
-          // 上一个五星是不是常驻
-          let lastKey = Number(i) + 1
-          if (fiveLog[lastKey] && !fiveLog[lastKey].isUp) {
-            fiveLog[i].minimum = true
-            bigNum++
-          } else {
-            fiveLog[i].minimum = false
-          }
-        }
-      }
-    } else {
-      // 没有五星
-      noFiveNum = allNum
-    }
-
-    // 四星最多
-    let four = []
-    for (let i in fourLog) {
-      four.push({
-        name: i,
-        num: fourLog[i]
-      })
-    }
-    four = four.sort((a, b) => { return b.num - a.num })
-
-    if (four.length <= 0) {
-      four.push({ name: '无', num: 0 })
-    }
-
-    let fiveAvg = 0
-    let fourAvg = 0
-    if (fiveNum > 0) {
-      fiveAvg = Number(((allNum - noFiveNum) / fiveNum).toFixed(2))
-    }
-    if (fourNum > 0) {
-      fourAvg = Number(((allNum - noFourNum) / fourNum).toFixed(2))
-    }
-    // 有效抽卡
-    let isvalidNum = 0
-
-    if (fiveNum > 0 && fiveNum > wai) {
-      if (fiveLog.length > 0 && !fiveLog[0].isUp) {
-        isvalidNum = (allNum - noFiveNum - fiveLog[0].num) / (fiveNum - wai)
-      } else {
-        isvalidNum = (allNum - noFiveNum) / (fiveNum - wai)
-      }
-      isvalidNum = Number(isvalidNum.toFixed(2))
-    }
-
-    let upYs: string | number = isvalidNum * 160
-    if (upYs >= 10000) {
-      upYs = (upYs / 10000).toFixed(2) + 'w'
-    } else {
-      upYs = upYs.toFixed(0)
-    }
-
-    // 小保底不歪概率
-    let noWaiRate: string | number = 0
-    if (fiveNum > 0) {
-      noWaiRate = (fiveNum - bigNum - wai) / (fiveNum - bigNum)
-      noWaiRate = (noWaiRate * 100).toFixed(1)
-    }
-    let firstTime = this.all[this.all.length - 1].time.substring(0, 16)
-    let lastTime = this.all[0].time.substring(0, 16)
-    return {
-      allNum,
-      noFiveNum,
-      noFourNum,
-      fiveNum,
-      fourNum,
-      fiveAvg,
-      fourAvg,
-      wai,
-      isvalidNum,
-      maxFour: four[0],
-      weaponNum,
-      weaponFourNum,
-      firstTime,
-      lastTime,
-      fiveLog,
-      upYs,
-      noWaiRate
-    }
-  }
-
-  checkIsUp() {
-    if (['克拉拉', '杰帕德', '瓦尔特', '布洛妮娅', '白露', '姬子'].includes(this.role.name)) {
-      return false
-    }
-    // if (this.role.name == '刻晴') {
-    //   let start = new Date('2021-02-17 18:00:00').getTime()
-    //   let end = new Date('2021-03-02 15:59:59').getTime()
-    //   let logTime = new Date(this.role.time).getTime()
-
-    //   if (logTime < start || logTime > end) {
-    //     return false
-    //   } else {
-    //     return true
-    //   }
-    // }
-
-    return true
-  }
 
   /** 渲染数据 */
-  randData(data: GachaLog.Analyse_Res) {
+  randData(data: GachaLogType.Analyse_Res) {
     let line = []
     if (this.type == 11) {
       line = [[
@@ -536,45 +249,6 @@ class GachaLog {
 }
 
 namespace GachaLog {
-  export interface Database {
-    id: number
-    uid: string
-    uuid?: string[]
-    link?: string
-    history?: string
-  }
-  export interface Role {
-    uid: string
-    gacha_id: string
-    gacha_type: string
-    item_id: string
-    count: string
-    time: string
-    name: string
-    lang: string
-    item_type: string
-    rank_type: string
-    id: string
-  }
-  export interface Analyse_Res {
-    allNum: number
-    noFiveNum: number
-    noFourNum: number
-    fiveNum: number
-    fourNum: number
-    fiveAvg: number
-    fourAvg: number
-    wai: number
-    isvalidNum: number
-    maxFour: { name: string, num: number }
-    weaponNum: number
-    weaponFourNum: number
-    firstTime: string
-    lastTime: string
-    fiveLog: any[]
-    upYs: string
-    noWaiRate: string | number
-  }
   export interface Config { }
 
   export const Config: Schema<Config> = Schema.object({})
@@ -583,15 +257,6 @@ namespace GachaLog {
 
 
 
-// API 参考自 https://github.com/vikiboss/star-rail-gacha-export
-const pkg = require('../package.json')
-export function timestamp(type?: 'unix'): number {
-  return type === 'unix' ? Date.now() / 1000 : Date.now();
-}
-export function wait(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
+
 
 export default GachaLog
