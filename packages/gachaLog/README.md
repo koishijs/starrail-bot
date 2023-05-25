@@ -1,29 +1,27 @@
-# koishi-plugin-sr-gachalog
+# koishi-plugin-starrail-gachalog
 
-[![npm](https://img.shields.io/npm/v/koishi-plugin-sr-gachalog?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-sr-gachalog)
-
+[![npm](https://img.shields.io/npm/v/starrail-gachalog?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-starrail-gachalog)
 
 
 ## 目录结构
 ### 已经做好了的
 - [x] Url导入抽卡记录
 - [x] 抽卡分析
-- [ ] 图像渲染（期待靓仔给我做）
-
-
+- [ ] 图像渲染（期待大佬给我做）
 
 ### 使用方法
 - 绑定url
-    - sr.bond + url
+    - sr.抽卡链接 + 抽卡历史的链接
+- sr.更新抽卡
 - sr.抽卡分析
 
-URL获取的办法[参考这里](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLvVA)
+
+抽卡历史链接获取的办法[参考这里](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLvVA)
 
 
 ## 感谢
 
-
-[`vikiboss`](https://github.com/vikiboss/star-rail-gacha-export)
+[vikiboss](https://github.com/vikiboss/star-rail-gacha-export)
 云崽
 ### 支持
 
@@ -33,4 +31,4 @@ URL获取的办法[参考这里](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLv
 
 您不应以任何形式使用本仓库进行盈利性活动。
 
-对于部署者行为及所产生的任何纠纷， Koishi 及 koishi-plugin-star-rail-atlas 概不负责。
+对于部署者行为及所产生的任何纠纷， Koishi 及 koishi-plugin-starrail-gachalog 概不负责。

@@ -1,6 +1,6 @@
 # koishi-plugin-star-rail-atlas
 
-[![npm](https://img.shields.io/npm/v/koishi-plugin-star-rail-atlas?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-star-rail-atlas)
+[![npm](https://img.shields.io/npm/v/koishi-plugin-starrail-atlas?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-starrail-atlas)
 
 ![alt 示例](https://raw.githubusercontent.com/initialencounter/mykoishi/master/screenshot/15.png)
 
@@ -45,4 +45,4 @@ Star-Rail-Atlas是一个主要由[`米游社@听语惊花`](https://bbs.mihoyo.c
 
 您不应以任何形式使用本仓库进行盈利性活动。
 
-对于部署者行为及所产生的任何纠纷， Koishi 及 koishi-plugin-star-rail-atlas 概不负责。
+对于部署者行为及所产生的任何纠纷， Koishi 及 koishi-plugin-starrail-atlas 概不负责。
