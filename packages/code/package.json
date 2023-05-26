@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-starrail-code",
   "description": "Get live code for Honkai: Star Rail",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.1-alpha.0",
   "repository": "https://github.com/koishijs/starrail-bot",
   "author": "Lipraty <i@lonay.me>",
   "main": "lib/index.js",
