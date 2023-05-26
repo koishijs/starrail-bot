@@ -38,7 +38,7 @@ export function apply(ctx: Context) {
     .action(async ({ session }) => {
       const quester = quest(ctx.http, session)
       session.send('正在查找最近的前瞻直播')
-      HoyoOfficalActId = getActId(await quester<HoyoLab>('https://bbs-api.mihoyo.com/painter/api/user_instant/list', { offset: 0, size: 20, uid: '75276550' }))
+      HoyoOfficalActId = getActId(await quester<HoyoLab>('https://bbs-api.mihoyo.com/painter/api/user_instant/list', { offset: 0, size: 20, uid: '288909600' }))
       if (HoyoOfficalActId) {
         // const indexRes = await quester<any>('https://api-takumi.mihoyo.com/event/bbslive/index', { act_id: HoyoOfficalActId })
         // if (!indexRes.mi18n) return 'mi18n 未找到'
@@ -94,7 +94,7 @@ function getActId(res: HoyoLab): string {
   const oneDay = 24 * 60 * 60 * 1000
   res.list.forEach(list => {
     const post = list.post.post
-    if (/([0-9].[0-9])版本「银河漫游」前瞻特别节目/gm.test(post.subject))
+    if (/([0-9].[0-9])版本前瞻特别节目(.+)开启/gm.test(post.subject))
       (JSON.parse(post.structured_content) as any[]).forEach(ele => {
         if (ele['attributes'])
           if (ele['attributes']['link']) {
