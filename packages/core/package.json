@@ -15,7 +15,8 @@
       "zh": "（开发中的版本）用于 Koishi 的《崩坏：星穹铁道》游戏工具箱"
     },
     "service": {
-      "implements": ["starrail"]
+      "implements": ["starrail"],
+      "required": ["database"]
     }
   },
   "keywords": [
