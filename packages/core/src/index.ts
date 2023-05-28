@@ -1,48 +1,41 @@
-import { Command, Context, Dict, Schema, Service, Session, User } from 'koishi'
+import { Context, Schema, Service } from 'koishi'
 import StarRailDatabase from './internal/database'
 import StarRailCommand from './internal/command'
 import { StarRail } from './internal/database'
 
 declare module 'koishi' {
   interface Context {
-    starrail: HonkaiStarRail
+    starrail: HonkaiStarRail.Mixins
   }
 }
 
-type CommandType = 'subset' | 'derive'
-
 class HonkaiStarRail extends Service {
+  static using = ['database']
   constructor(private app: Context, private config: HonkaiStarRail.Config) {
     super(app, 'starrail', true)
-    app.on('ready', this.ready(app))
-  }
+    // install the base command of first
+    app.command('sr').action(async ({ session }) => session.execute('help sr'))
 
-  protected ready(ctx: Context) {
-    ctx.command('sr').action(async ({ session }) => session.execute('help sr'))
-    return async () => {
+    app.on('ready', async () => {
+      // apply all internal plugins constructorer via mixin
+      this.mixin([StarRailDatabase, StarRailCommand])
       // apply internal plugins.
-      ctx.plugin(StarRailDatabase)
-      // ctx.plugin(StarRailCommand, this.config)
-    }
+      app.plugin(StarRailDatabase)
+      app.plugin(StarRailCommand, this.config)
+    })
   }
 
-  private defineCommand(command: string, type: CommandType, ...args: any[]): Command {
-    const def = type === 'subset' ? `sr.${command}` : `sr/${command}`
-    const desc = typeof args[0] === 'string' ? args.shift() as string : ''
-    const config = args[0] as Command.Config || {}
-    return this.app.command(def, desc, config)
-  }
-
-  subcommand<D extends string>(def: D, config?: Command.Config): Command
-  subcommand<D extends string>(def: D, desc: string, config?: Command.Config): Command
-  public subcommand(def: string, ...args: any[]) {
-    return this.defineCommand(def, 'subset', ...args)
-  }
-
-  dercommand<D extends string>(def: D, config?: Command.Config): Command
-  dercommand<D extends string>(def: D, desc: string, config?: Command.Config): Command
-  public dercommand(def: string, ...args: any[]) {
-    return this.defineCommand(def, 'derive', ...args)
+  protected mixin(constructorers: any[]) {
+    constructorers.forEach((ctor) => {
+      Object.getOwnPropertyNames(ctor.prototype).forEach((name) => {
+        Object.defineProperty(
+          HonkaiStarRail.prototype,
+          name,
+          Object.getOwnPropertyDescriptor(ctor.prototype, name) ||
+          Object.create(null)
+        );
+      });
+    })
   }
 
   /**
@@ -51,23 +44,23 @@ class HonkaiStarRail extends Service {
   async getUid(id: number): Promise<Pick<StarRail, "uid">[]> {
     return await this.ctx.database.get('star_rail', id)
   }
-  async setUid(id: number, sr_uid: string, default_: boolean = false): Promise<void> {
-    if (default_ === true) await this.ctx.database.set('user', id, { sr_uid: sr_uid })
-    await this.ctx.database.set('star_rail', id, { uid: sr_uid })
+  async setUid(id: number, srUid: string, def: boolean = false): Promise<void> {
+    if (def === true) await this.ctx.database.set('user', id, { sr_uid: srUid })
+    await this.ctx.database.set('star_rail', id, { uid: srUid })
   }
 }
 
 namespace HonkaiStarRail {
-  export interface Config {
+  interface BaseConfig { }
+  const BaseConfig: Schema<BaseConfig> = Schema.object({})
+  export type Config = BaseConfig & StarRailCommand.Config;
+  export const Config: Schema<Config> = Schema.intersect([BaseConfig, StarRailCommand.Config])
 
-  }
-  export const Config: Schema<Config> = Schema.intersect([
-    Schema.object({
+  export type Collapse<T> = Pick<T, {
+    [K in keyof T]: T[K] extends Function | number | string | boolean ? K : never;
+  }[keyof T]>
 
-    })
-  ])
+  export type Mixins = Collapse<HonkaiStarRail> & Collapse<StarRailDatabase> & Collapse<StarRailCommand>
 }
-
-export * from './internal/database'
 
 export default HonkaiStarRail
