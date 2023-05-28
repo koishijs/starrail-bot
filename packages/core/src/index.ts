@@ -2,6 +2,8 @@ import { Context, Schema, Service } from 'koishi'
 import StarRailDatabase from './internal/database'
 import StarRailCommand from './internal/command'
 import { StarRail } from './internal/database'
+import StarRailGachaLog from './internal/gachaLog'
+import StarRailAtlas from './internal/atlas'
 
 declare module 'koishi' {
   interface Context {
@@ -18,10 +20,12 @@ class HonkaiStarRail extends Service {
 
     app.on('ready', async () => {
       // apply all internal plugins constructorer via mixin
-      this.mixin([StarRailDatabase, StarRailCommand])
+      this.mixin([StarRailDatabase, StarRailCommand,StarRailGachaLog])
       // apply internal plugins.
       app.plugin(StarRailDatabase)
       app.plugin(StarRailCommand, this.config)
+      app.plugin(StarRailGachaLog)
+      app.plugin(StarRailAtlas)
     })
   }
 
@@ -37,17 +41,6 @@ class HonkaiStarRail extends Service {
       });
     })
   }
-
-  /**
-   * WIP
-   */
-  async getUid(id: number): Promise<Pick<StarRail, "uid">[]> {
-    return await this.ctx.database.get('star_rail', id)
-  }
-  async setUid(id: number, srUid: string, def: boolean = false): Promise<void> {
-    if (def === true) await this.ctx.database.set('user', id, { sr_uid: srUid })
-    await this.ctx.database.set('star_rail', id, { uid: srUid })
-  }
 }
 
 namespace HonkaiStarRail {
@@ -55,12 +48,11 @@ namespace HonkaiStarRail {
   const BaseConfig: Schema<BaseConfig> = Schema.object({})
   export type Config = BaseConfig & StarRailCommand.Config;
   export const Config: Schema<Config> = Schema.intersect([BaseConfig, StarRailCommand.Config])
-
   export type Collapse<T> = Pick<T, {
     [K in keyof T]: T[K] extends Function | number | string | boolean ? K : never;
   }[keyof T]>
 
-  export type Mixins = Collapse<HonkaiStarRail> & Collapse<StarRailDatabase> & Collapse<StarRailCommand>
+  export type Mixins = Collapse<HonkaiStarRail> & Collapse<StarRailDatabase> & Collapse<StarRailCommand> & Collapse<StarRailGachaLog> & Collapse<StarRailAtlas>
 }
 
 export default HonkaiStarRail

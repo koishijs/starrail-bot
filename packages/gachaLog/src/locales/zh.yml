@@ -1,5 +1,0 @@
-gacahlog:
-  messages:
-    url-err: 获取失败，链接无效或已过期，请重新抓取
-    url-no: 未绑定抽卡记录链接
-    uid-no: 未绑定uid

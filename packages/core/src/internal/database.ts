@@ -26,7 +26,7 @@ export namespace StarRail {
 }
 
 class StarRailDatabase {
-    constructor(app: Context) {
+    constructor(private app: Context) {
         app.model.extend('binding', {
             sr: 'list'
         })
@@ -38,13 +38,28 @@ class StarRailDatabase {
             uid: 'string(9)',
             doken: 'string',
             cookie: 'text'
+        }, {
+            primary: 'uid',
+            unique: ['id','uid'],
+            foreign: {
+                id: ['user', 'id']
+            }
         })
 
         app.on('ready', () => {
 
         })
     }
-
+    /**
+    * WIP
+    */
+    async getUid(id: number): Promise<Pick<StarRail, "uid">[]> {
+        return await this.app.database.get('star_rail', id, ["uid"])
+    }
+    async setUid(id: number, srUid: string, def: boolean = false): Promise<void> {
+        if (def === true) await this.app.database.set('user', id, { sr_uid: srUid })
+        await this.app.database.set('star_rail', id, { uid: srUid })
+    }
     getStarFields(fields: Field<StarRail.Field>): StarRail.Observed {
         return
     }

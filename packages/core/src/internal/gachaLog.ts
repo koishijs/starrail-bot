@@ -1,34 +1,40 @@
 import { Context, Session, Schema, Logger } from "koishi";
-import { StarRail } from "koishi-plugin-starrail"
-import * as GachaLogType from "./type"
-import * as Analyse from './analyse'
-import { fetchUigfRecords, gacha } from './api'
+// import { } from "koishi-plugin-starrail"
+import { StarRail } from "./database"
+import * as GachaLogType from "../type/gachaLog"
+import * as Analyse from '../utils/analyse'
+import { fetchUigfRecords, gacha } from '../utils/api'
 export const logger = new Logger('sr.抽卡分析')
 export const using = ['starrail']
 
 declare module 'koishi' {
   interface StarRail {
     id: number
+    uid: string
+    doken: string
+    cookie: string
     link: string
     gachaLog_history: GachaLogType.Role[][]
   }
 }
-
-class GachaLog {
+class StarRailGachaLog{
   role: GachaLogType.Role
   uid: string
   typeName: string
   all: GachaLogType.Role[]
   data: GachaLogType.Role[][]
   type: number
-  constructor(private ctx: Context) {
+  constructor(private ctx: Context,config:StarRailGachaLog.Config) {
     ctx.model.extend('star_rail', {
       id: 'unsigned',
+      uid: 'string(9)',
+      doken: 'string',
+      cookie: 'string',
       link: 'string',
-      gachaLog_history: 'json'
+      gachaLog_history: 'json',
     })
-    ctx.i18n.define('zh', require('./locales/zh'))
-    ctx.starrail.subcommand('bind <uid:string>')
+    ctx.i18n.define('zh', require('../locales/zh'))
+    ctx.command('bind <uid:string>')
       .alias('星铁绑定')
       .action(async ({ session }, uid) => {
         if (!uid) {
@@ -37,17 +43,20 @@ class GachaLog {
         }
         if (!uid) return
         const session_user: Session<"id"> = session as Session<"id">
-        await this.ctx.starrail.setUid(session_user.user.id, uid, true)
+        const uid_base = (await this.ctx.starrail.getUid(session_user.user.id))[0]?.uid
+        let user_enable = false
+        if(uid_base) user_enable=true
+        await this.ctx.starrail.setUid(session_user.user.id, uid, user_enable)
         return '绑定成功'
       })
-    ctx.starrail.subcommand('抽卡链接 <url:text>')
+    ctx.command('抽卡链接 <url:text>')
       .action(async ({ session }, url) => this.bind_url(session, url))
-    ctx.starrail.subcommand('抽卡分析 <type:number>')
+    ctx.command('抽卡分析 <type:number>')
       .option('uid', '-u <uid:string>')
       .action(async ({ session, options }, type) => this.do_anna(session, options, type))
-    ctx.starrail.subcommand('更新抽卡')
+    ctx.command('更新抽卡')
       .option('uid', '-u <uid:string>')
-      .action(async ({ session, options }) => this.update(session, options))
+      .action(async ({ session, options }) => this.update(session, options.uid,null))
 
   }
 
@@ -57,15 +66,17 @@ class GachaLog {
    * @param options 
    * @returns 
    */
-  async update(session: Session, options: GachaLogType.GachaLogOpt, link?: string) {
+  async update(session: Session, uid: string, link?: string) {
     const { user: { id } }: Session<"id"> = session as Session<"id">
-
-    const uid: string = options.uid ? options.uid : (await this.ctx.starrail.getUid(id))[0]?.uid
     if (!uid) {
-      return session.text('gachalog.messages.uid-no')
+      const uid_base = (await this.ctx.starrail.getUid(id))[0]?.uid
+      if (!uid_base) return session.text('gachalog.messages.uid-no')
+      uid = uid_base
+    }else{
+      await this.ctx.starrail.setUid(id,uid)
     }
     if (!link) {
-      link = (await this.ctx.database.get('star_rail', id))[0]?.link;
+      const link = (await this.ctx.database.get('star_rail', { uid: [uid] }))[0]?.link
       if (!link) {
         return session.text('gachalog.messages.url-no')
       }
@@ -91,10 +102,12 @@ class GachaLog {
     for (var i in this.data) {
       text += `${gacha[map[i]]}: ${this.data[i].length - count[map[i]]}发\n`
     }
-    if ((await this.ctx.starrail.getUid(id)).length < 1) {
-      this.ctx.database.create('star_rail', { gachaLog_history: this.data })
+    // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    if ((await this.ctx.database.get('star_rail',{uid:[uid]})).length==0) {
+      this.ctx.database.create('star_rail', {uid:uid,link:link,gachaLog_history: this.data })
+    // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     } else {
-      this.ctx.database.set('star_rail', id, { gachaLog_history: this.data })
+      this.ctx.database.set('star_rail',{uid:[uid]}, { gachaLog_history: this.data })
     }
     return text
   }
@@ -148,15 +161,18 @@ class GachaLog {
       uid = data[0].uid ? data[0].uid : data[0][0].uid
       const account: Pick<StarRail, "uid">[] = await this.ctx.starrail.getUid(id)
       // 更新数据库
-      if (account.length < 1) {
-        await this.ctx.starrail.setUid(id, uid, true)
+      if (account.length == 0) {
+        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        await this.ctx.database.create('star_rail',{uid:uid})
+        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        await this.ctx.starrail.setUid(id,uid,true)
       }
-      await this.ctx.database.set('star_rail', id, { link: url })
+      await this.ctx.database.set('star_rail', {uid:[uid]}, { link: url })
     } catch (e) {
       logger.error(String(e))
       return String(e)
     }
-    const text = await this.update(session, { uid: uid }, url)
+    const text = await this.update(session, uid, url)
     return '绑定成功\n' + text
   }
   data2text() {
@@ -248,7 +264,7 @@ class GachaLog {
   }
 }
 
-namespace GachaLog {
+namespace StarRailGachaLog {
   export const usage = `
 ## 目录结构
 ### 已经做好了的
@@ -288,4 +304,4 @@ namespace GachaLog {
 
 
 
-export default GachaLog
+export default StarRailGachaLog
