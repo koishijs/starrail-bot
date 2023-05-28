@@ -1,4 +1,4 @@
-import { Context, DatabaseService, Observed as OB } from "koishi";
+import { Context, DatabaseService, Field, FieldCollector, Observed as OB } from "koishi";
 
 declare module 'koishi' {
     interface User {
@@ -25,21 +25,28 @@ export namespace StarRail {
     export type Observed<K extends Field = Field> = OB<Pick<StarRail, K>, Promise<void>>
 }
 
-class StarRailDatabase extends DatabaseService {
+class StarRailDatabase {
     constructor(app: Context) {
-        super(app)
-        this.extend('binding', {
+        app.model.extend('binding', {
             sr: 'list'
         })
-        this.extend('user', {
+        app.model.extend('user', {
             sr_uid: 'string(9)'
         })
-        this.extend('star_rail', {
+        app.model.extend('star_rail', {
             id: 'unsigned',
             uid: 'string(9)',
             doken: 'string',
             cookie: 'text'
         })
+
+        app.on('ready', () => {
+
+        })
+    }
+
+    getStarFields(fields: Field<StarRail.Field>): StarRail.Observed {
+        return
     }
 }
 
