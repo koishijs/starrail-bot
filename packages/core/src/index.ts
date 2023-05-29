@@ -12,7 +12,7 @@ declare module 'koishi' {
 
 class HonkaiStarRail extends Service {
   static using = ['database']
-  constructor(private app: Context, private config: HonkaiStarRail.Config) {
+  constructor(private app: Context, config: HonkaiStarRail.Config) {
     super(app, 'starrail', true)
     // install the base command of first
     app.command('sr').action(async ({ session }) => session.execute('help sr'))
@@ -22,7 +22,7 @@ class HonkaiStarRail extends Service {
       this.mixin([StarRailDatabase, StarRailCommand])
       // apply internal plugins.
       app.plugin(StarRailDatabase)
-      app.plugin(StarRailCommand, this.config)
+      app.plugin(StarRailCommand, config)
       app.plugin(StarRailGachaLog)
       app.plugin(StarRailAtlas)
     })
