@@ -1,9 +1,6 @@
 import { Context, Schema, Service } from 'koishi'
 import StarRailDatabase from './internal/database'
 import StarRailCommand from './internal/command'
-import StarRailGachaLog from './internal/gachaLog'
-import StarRailAtlas from './internal/atlas'
-
 declare module 'koishi' {
   interface Context {
     starrail: HonkaiStarRail & HonkaiStarRail.Mixins
@@ -16,15 +13,12 @@ class HonkaiStarRail extends Service {
     super(app, 'starrail', true)
     // install the base command of first
     app.command('sr').action(async ({ session }) => session.execute('help sr'))
-
     app.on('ready', async () => {
       // apply all internal plugins constructorer via mixin
       this.mixin([StarRailDatabase, StarRailCommand])
       // apply internal plugins.
       app.plugin(StarRailDatabase)
       app.plugin(StarRailCommand, config)
-      app.plugin(StarRailGachaLog)
-      app.plugin(StarRailAtlas)
     })
   }
 
@@ -51,8 +45,9 @@ namespace HonkaiStarRail {
     [K in keyof T]: T[K] extends Function | number | string | boolean ? K : never;
   }[keyof T]>
 
-  export type Mixins = Collapse<StarRailDatabase> & Collapse<StarRailCommand> & Collapse<StarRailAtlas>
+  export type Mixins = Collapse<StarRailDatabase> & Collapse<StarRailCommand>
 }
 
 export { StarRail } from './internal/database'
+export * from './internal/database'
 export default HonkaiStarRail

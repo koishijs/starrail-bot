@@ -1,0 +1,32 @@
+{
+  "name": "koishi-plugin-starrail-gachalog",
+  "description": "《崩坏 星穹铁道》抽卡分析",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "license": "AGPL-3.0",
+  "scripts": {},
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin"
+  ],
+  "peerDependencies": {
+    "koishi": "^4.12.0"
+  },
+  "koishi": {
+    "description": {
+      "zh": "✨ 获取《崩坏：星穹铁道》抽卡分析"
+    },
+    "service": {
+      "optional": [
+        "puppeteer"
+      ],
+      "required": ["starrail"]
+    }
+  }
+}

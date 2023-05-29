@@ -1,6 +1,5 @@
 import { Context, Schema, Session, h, Dict } from 'koishi'
 export const name = 'starrail-atlas'
-// import { } from 'koishi-plugin-starrail'
 export const using = ['starrail']
 import { resolve } from "path";
 import { pathToFileURL } from "url";

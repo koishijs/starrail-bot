@@ -7,7 +7,6 @@ export const gacha = {
   '12': '光锥跃迁'
 } as const;
 // API 参考自 https://github.com/vikiboss/star-rail-gacha-export
-const pkg = require('../package.json')
 export function timestamp(type?: 'unix'): number {
   return type === 'unix' ? Date.now() / 1000 : Date.now();
 }
@@ -99,8 +98,6 @@ export async function fetchUigfRecords(ctx: Context, link: string, useProxy = fa
     uid,
     lang: 'zh-CN',
     export_timestamp: timestamp(),
-    export_app: pkg?.name,
-    export_app_version: `v${pkg?.version}`,
     uigf_version: 'v2.3'
   }
 

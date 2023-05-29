@@ -35,12 +35,3 @@ commands:
       messages:
         binded: cookie 已绑定到 {0}
         removed: 已取消 {0} 的 cookie
-  gacahlog:
-    messages:
-      url-err: 获取失败，链接无效或已过期，请重新抓取
-      url-no: 未绑定抽卡记录链接
-      uid-no: 未绑定uid
-  update:
-    description: 更新图鉴索引
-    messages:
-      success: 更新图鉴索引成功

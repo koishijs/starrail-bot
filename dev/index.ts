@@ -6,10 +6,10 @@ import * as sandbox from '@koishijs/plugin-sandbox';
 import Sqlite from "@koishijs/plugin-database-sqlite";
 import Dataview from "@koishijs/plugin-dataview"
 
-import Starrail from '../packages/core'
-import Atlas from '../packages/atlas';
-import GachaLog from '../packages/gachaLog';
-import * as Code from '../packages/code';
+// import Starrail from '../packages/core'
+// import Atlas from '../packages/starrail-atlas';
+import GachaLog from '../packages/starrail-gachalog';
+// import * as Code from '../packages/code';
 
 
 const app = new App({
@@ -22,20 +22,22 @@ app.plugin(Console);
 app.plugin(LogProvider);
 app.plugin(sandbox);
 app.plugin(Sqlite, {
-  path: "./koishi.db"
+  path: "./.koishi.db"
 })
 app.plugin(Dataview)
 
 // Target plugin
-app.plugin(Starrail);
-app.plugin(Atlas, {
-  prefix: "#",
-  engine: true,
-  src_path: '',
-  repo: 'https://gitee.com/Nwflower/star-rail-atlas/raw/master'
+// app.plugin(Starrail);
+// app.plugin(Atlas, {
+//   prefix: "#",
+//   engine: true,
+//   src_path: '',
+//   repo: 'https://gitee.com/Nwflower/star-rail-atlas/raw/master'
+// });
+app.plugin(GachaLog,{
+  send_as_img: false
 });
-app.plugin(GachaLog);
-app.plugin(Code);
+// app.plugin(Code);
 
 
 app.start();

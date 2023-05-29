@@ -1,4 +1,4 @@
-import * as GachaLogType from '../type/gachaLog'
+import * as GachaLogType from './type'
 
 
 // 参考自云崽
