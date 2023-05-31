@@ -1,4 +1,5 @@
-import { Context, DatabaseService, Field, FieldCollector, Observed as OB } from "koishi";
+import { Model } from "koishi";
+import { Context, Field, Observed as OB } from "koishi";
 
 declare module 'koishi' {
   interface User {
@@ -62,6 +63,10 @@ class StarRailDatabase {
   }
   getStarFields(fields: Field<StarRail.Field>): StarRail.Observed {
     return
+  }
+
+  extendDatabase(fields: Field.Extension<StarRail>, config: Partial<Model.Config<StarRail>>) {
+    this.app.model.extend('star_rail', fields, config)
   }
 }
 
