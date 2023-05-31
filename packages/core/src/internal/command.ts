@@ -3,6 +3,7 @@ import { Command, Context, Schema, Session } from "koishi";
 type CommandType = 'subset' | 'derive'
 
 class StarRailCommander {
+  static using = ['starrail']
   constructor(private ctx: Context, private config: StarRailCommander.Config) {
     //#region commands
     ctx.starrail.subcommand('uid <uid>')
