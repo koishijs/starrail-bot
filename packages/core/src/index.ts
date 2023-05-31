@@ -1,6 +1,6 @@
 import { Context, Schema, Service } from 'koishi'
 import StarRailDatabase from './internal/database'
-import StarRailCommand from './internal/command'
+import StarRailCommander from './internal/command'
 declare module 'koishi' {
   interface Context {
     starrail: HonkaiStarRail & HonkaiStarRail.Mixins
@@ -13,12 +13,12 @@ class HonkaiStarRail extends Service {
     super(app, 'starrail', true)
     // install the base command of first
     app.command('sr').action(async ({ session }) => session.execute('help sr'))
-    app.on('ready', async () => {
-      // apply all internal plugins constructorer via mixin
-      this.mixin([StarRailDatabase, StarRailCommand])
+    // apply all internal plugins constructorer via mixin
+    this.mixin([StarRailDatabase, StarRailCommander])
+    app.on('ready', () => {
       // apply internal plugins.
       app.plugin(StarRailDatabase)
-      app.plugin(StarRailCommand, config)
+      app.plugin(StarRailCommander, config)
     })
   }
 
@@ -39,15 +39,15 @@ class HonkaiStarRail extends Service {
 namespace HonkaiStarRail {
   interface BaseConfig { }
   const BaseConfig: Schema<BaseConfig> = Schema.object({})
-  export type Config = BaseConfig & StarRailCommand.Config;
-  export const Config: Schema<Config> = Schema.intersect([BaseConfig, StarRailCommand.Config])
+
+  export type Config = BaseConfig & StarRailCommander.Config;
+  export const Config: Schema<Config> = Schema.intersect([BaseConfig, StarRailCommander.Config])
+
   export type Collapse<T> = Pick<T, {
     [K in keyof T]: T[K] extends Function | number | string | boolean ? K : never;
   }[keyof T]>
-
-  export type Mixins = Collapse<StarRailDatabase> & Collapse<StarRailCommand>
+  export type Mixins = Collapse<StarRailDatabase> & Collapse<StarRailCommander>
 }
 
 export { StarRail } from './internal/database'
-export * from './internal/database'
 export default HonkaiStarRail
