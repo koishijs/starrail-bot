@@ -1,4 +1,0 @@
-update:
-  description: 更新图鉴索引
-  messages:
-    success: 更新图鉴索引成功

@@ -1,30 +1,18 @@
 import { Context, Session, Schema, Logger } from "koishi";
 import { } from "koishi-plugin-puppeteer";
-import { StarRail } from "./database";
+import { StarRail } from "koishi-plugin-starrail"
 import * as GachaLogType from "./type"
 import * as Analyse from './analyse'
 import { fetchUigfRecords, gacha } from './api'
 export const uesing = ['starrail']
 export const logger = new Logger('sr.gachaLog')
 
-
-declare module './database' {
+declare module 'koishi-plugin-starrail' {
   interface StarRail {
-    id: number
-    uid: string
-    dtoken: string
-    cookie: string
     link: string
     gachaLog_history: GachaLogType.Role[][]
   }
-  interface User {
-    sr_uid: string
-  }
 }
-
-
-// TODO: 看了下可以改成 apply 函数，不用默认导出
-// RES: 半年没写apply了不太熟练。。。
 class StarRailGachaLog {
   role: GachaLogType.Role
   uid: string
@@ -35,15 +23,8 @@ class StarRailGachaLog {
 
   constructor(private ctx: Context, private config: StarRailGachaLog.Config) {
     ctx.model.extend('star_rail', {
-      id: 'unsigned',
-      uid: 'string',
-      dtoken: 'string',
-      cookie: 'string',
       link: 'string',
-      gachaLog_history: 'json',
-    })
-    ctx.model.extend('user', {
-      sr_uid: 'string'
+      gachaLog_history: 'json'
     })
     ctx.i18n.define('zh', require('./locales/zh'))
 
@@ -204,14 +185,14 @@ class StarRailGachaLog {
     const ans: GachaLogType.Analyse_Res = Analyse.analyse(this.all, this.role)
     const res: GachaLogType.Gachadata_sep = this.randData(ans) as GachaLogType.Gachadata_sep
 
-    if(this.config.send_as_img&&this.ctx.puppeteer){
+    if (this.config.send_as_img && this.ctx.puppeteer) {
       return this.json2img(res)
     }
     const text = JSON.stringify(res, null, 2)
     return text
   }
-  json2img(history_data:GachaLogType.Gachadata_sep) {
-    
+  json2img(history_data: GachaLogType.Gachadata_sep) {
+
     const fiveLog_name = [<td>角色</td>]
     const fiveLog_num = [<td>抽数</td>]
     for (var i of history_data.fiveLog) {
