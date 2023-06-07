@@ -1,6 +1,13 @@
 import { Model } from "koishi";
 import { Context, Field, Observed as OB } from "koishi";
 
+export interface StarRail {
+  id: number
+  uid: string
+  doken: string // DS Token => doken
+  cookie: string
+}
+
 declare module 'koishi' {
   interface User {
     sr_uid: string
@@ -9,21 +16,20 @@ declare module 'koishi' {
     sr: number[]
   }
   interface Tables {
-    star_rail: StarRail
+    star_rail: StarRail.Database
   }
-}
-
-export interface StarRail {
-  id: number
-  uid: string
-  doken: string // DS Token => doken
-  cookie: string
 }
 
 export namespace StarRail {
   export type Field = keyof StarRail
   export const fields: Field[] = []
   export type Observed<K extends Field = Field> = OB<Pick<StarRail, K>, Promise<void>>
+  export interface Database {
+    id: number
+    uid: string
+    doken: string // DS Token => doken
+    cookie: string
+  }
 }
 
 class StarRailDatabase {
@@ -65,7 +71,7 @@ class StarRailDatabase {
     return
   }
 
-  extendDatabase(fields: Field.Extension<StarRail>, config: Partial<Model.Config<StarRail>>) {
+  extendDatabase(fields: Field.Extension<StarRail>, config?: Partial<Model.Config<StarRail>>) {
     this.app.model.extend('star_rail', fields, config)
   }
 }

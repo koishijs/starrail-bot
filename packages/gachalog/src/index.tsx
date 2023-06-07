@@ -8,9 +8,12 @@ export const uesing = ['starrail']
 export const logger = new Logger('sr.gachaLog')
 
 declare module 'koishi-plugin-starrail' {
-  interface StarRail {
-    link: string
-    gachaLog_history: GachaLogType.Role[][]
+  namespace StarRail {
+    interface Database {
+      link: string
+      gachaLog_history: GachaLogType.Role[][]
+    }
+
   }
 }
 class StarRailGachaLog {
