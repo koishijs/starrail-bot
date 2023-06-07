@@ -49,5 +49,5 @@ namespace HonkaiStarRail {
   export type Mixins = Collapse<StarRailDatabase> & Collapse<StarRailCommander>
 }
 
-export { StarRail } from './internal/database'
+export * from './internal/database'
 export default HonkaiStarRail
