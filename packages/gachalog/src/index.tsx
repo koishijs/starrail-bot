@@ -25,9 +25,12 @@ class StarRailGachaLog {
   type: number
 
   constructor(private ctx: Context, private config: StarRailGachaLog.Config) {
-    ctx.model.extend('star_rail', {
-      link: 'string',
-      gachaLog_history: 'json'
+    ctx.on('ready',async ()=>{
+      await this.sleep(5000)
+      ctx.model.extend('star_rail', {
+        link: 'string',
+        gachaLog_history: 'json'
+      })
     })
     ctx.i18n.define('zh', require('./locales/zh'))
 
@@ -64,7 +67,9 @@ class StarRailGachaLog {
 
       })
   }
-
+  sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
   /**
    * 更新数据库的抽卡记录,请确保link所属uid已存在star_rail表,否则保存不到数据
    * @param session 
