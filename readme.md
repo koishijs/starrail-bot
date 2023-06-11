@@ -23,6 +23,8 @@ npm i koishi-pligin-starrail
 部分功能将会作为独立插件另外发布，目前基于 `starrail` 服务的插件有
 
 - [x] starrail-code: 获取前瞻直播兑换码
+- [x] starrail-gachalog: 获取抽卡记录 (maintain @initialencounter )
+- [x] starrail-atlas: 《崩坏 星穹铁道》图鉴 (maintain @initialencounter )
 
 ## 开发
 
