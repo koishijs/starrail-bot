@@ -3,8 +3,7 @@ import { } from "koishi-plugin-puppeteer";
 import { StarRail } from "koishi-plugin-starrail"
 import * as GachaLogType from "./type"
 import * as Analyse from './analyse'
-import { fetchUigfRecords, gacha } from './api'
-export const uesing = ['starrail']
+import {fetchGachaRecords, gacha } from './api'
 export const logger = new Logger('sr.gachaLog')
 
 declare module 'koishi-plugin-starrail' {
@@ -17,6 +16,7 @@ declare module 'koishi-plugin-starrail' {
   }
 }
 class StarRailGachaLog {
+  static using = ['starrail']
   role: GachaLogType.Role
   uid: string
   typeName: string
@@ -25,12 +25,9 @@ class StarRailGachaLog {
   type: number
 
   constructor(private ctx: Context, private config: StarRailGachaLog.Config) {
-    ctx.on('ready',async ()=>{
-      await this.sleep(5000)
-      ctx.model.extend('star_rail', {
-        link: 'string',
-        gachaLog_history: 'json'
-      })
+    ctx.model.extend('star_rail', {
+      link: 'string',
+      gachaLog_history: 'json'
     })
     ctx.i18n.define('zh', require('./locales/zh'))
 
@@ -43,7 +40,7 @@ class StarRailGachaLog {
     ctx.command('sr.gacha [uid:string]')
       .option('type', '-t <type:number>')
       .option('update', '-u')
-      // .userFields(['sr_uid', 'id'])
+      .userFields(['sr_uid', 'id'])
       .action(async ({ session, options }, uid) => {
         this.type = options.type || 11
         let { user: { sr_uid, id } }: Session<"sr_uid" | 'id'> = session as Session<"sr_uid" | "id">
@@ -92,7 +89,7 @@ class StarRailGachaLog {
         count[String(i)] = history_data[i].length;
       }
     }
-    this.data = (await fetchUigfRecords(this.ctx, link, false)).list
+    this.data = (await fetchGachaRecords(this.ctx, link, false))
     if (!this.data) {
       return session.text('commands.gachalog.messages.url-err')
     }
@@ -156,10 +153,11 @@ class StarRailGachaLog {
       }
       const account: Pick<StarRail, "uid">[] = (await this.ctx.database.get("star_rail", { uid: [uid] }))
       // 更新数据库
+      
       if (account.length == 0) {
-        await this.ctx.database.create('star_rail', { uid: uid, link: url })
+        await this.ctx.database.create('star_rail', { uid: uid,id:id,link: url })
       } else {
-        await this.ctx.database.set('star_rail', { uid: [uid] }, { link: url })
+        await this.ctx.database.set('star_rail', { uid:[uid] }, {link: url })
       }
     } catch (e) {
       logger.error(String(e))
