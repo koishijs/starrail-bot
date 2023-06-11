@@ -22,3 +22,5 @@ tsconfig.tsbuildinfo
 *.db
 koishi.yml
 external
+dev
+logs
