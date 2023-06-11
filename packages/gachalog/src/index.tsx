@@ -26,7 +26,7 @@ class StarRailGachaLog {
 
   constructor(private ctx: Context, private config: StarRailGachaLog.Config) {
     ctx.model.extend('star_rail', {
-      link: 'string',
+      link: 'text',
       gachaLog_history: 'json'
     })
     ctx.i18n.define('zh', require('./locales/zh'))
