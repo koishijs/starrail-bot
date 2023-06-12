@@ -1,13 +1,6 @@
 import { Model } from "koishi";
 import { Context, Field, Observed as OB } from "koishi";
 
-export interface StarRail {
-  id: number
-  uid: string
-  doken: string // DS Token => doken
-  cookie: string
-}
-
 declare module 'koishi' {
   interface User {
     sr_uid: string
@@ -21,11 +14,12 @@ declare module 'koishi' {
 }
 
 export namespace StarRail {
-  export type Field = keyof StarRail
+  export type Field = keyof Database
   export const fields: Field[] = []
-  export type Observed<K extends Field = Field> = OB<Pick<StarRail, K>, Promise<void>>
+  export type Observed<K extends Field = Field> = OB<Pick<Database, K>, Promise<void>>
   export interface Database {
     id: number
+    bid: number
     uid: string
     doken: string // DS Token => doken
     cookie: string
@@ -42,12 +36,13 @@ class StarRailDatabase {
     })
     app.model.extend('star_rail', {
       id: 'unsigned',
+      bid: 'integer',
       uid: 'string(9)',
       doken: 'string',
       cookie: 'text'
     }, {
-      primary: 'uid',
       unique: ['id', 'uid'],
+      autoInc: true,
       foreign: {
         id: ['user', 'id']
       }
@@ -57,21 +52,21 @@ class StarRailDatabase {
 
     })
   }
-  /**
-  * WIP
-  */
-  async getUid(id: number): Promise<Pick<StarRail, "uid">[]> {
-    return await this.app.database.get('star_rail', id, ["uid"])
-  }
-  async setUid(id: number, srUid: string, def: boolean = false): Promise<void> {
-    if (def === true) await this.app.database.set('user', id, { sr_uid: srUid })
-    await this.app.database.set('star_rail', id, { uid: srUid })
-  }
-  getStarFields(fields: Field<StarRail.Field>): StarRail.Observed {
-    return
+
+  async getUid(bid: number): Promise<string[]> {
+    return (await this.app.database.get('star_rail', { bid }, ["uid"])).map(u => u.uid)
   }
 
-  extendDatabase(fields: Field.Extension<StarRail>, config?: Partial<Model.Config<StarRail>>) {
+  async existUid(uid: string): Promise<boolean> {
+    return (await this.app.database.get('star_rail', { uid })).length > 0
+  }
+
+  async setUid(bid: number, srUid: string, def: boolean = false): Promise<void> {
+    if (def === true) await this.app.database.set('user', { id: bid }, { sr_uid: srUid })
+    await this.app.database.upsert('star_rail', [{ bid, uid: srUid }], ['uid'])
+  }
+
+  extendDatabase(fields: Field.Extension<StarRail.Database>, config?: Partial<Model.Config<StarRail.Database>>) {
     this.app.model.extend('star_rail', fields, config)
   }
 }
