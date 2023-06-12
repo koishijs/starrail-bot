@@ -11,15 +11,14 @@ class HonkaiStarRail extends Service {
   static using = ['database']
   constructor(private app: Context, config: HonkaiStarRail.Config) {
     super(app, 'starrail', true)
+    app.i18n.define('zh', require('./locales/zh'))
     // install the base command of first
     app.command('sr').action(async ({ session }) => session.execute('help sr'))
     // apply all internal plugins constructorer via mixin
     this.mixin([StarRailDatabase, StarRailCommander])
-    app.on('ready', () => {
-      // apply internal plugins.
-      app.plugin(StarRailDatabase)
-      app.plugin(StarRailCommander, config)
-    })
+    // apply internal plugins.
+    app.plugin(StarRailDatabase)
+    app.plugin(StarRailCommander, config)
   }
 
   protected mixin(constructorers: any[]) {
