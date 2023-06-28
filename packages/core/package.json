@@ -12,7 +12,8 @@
   "koishi": {
     "priview": true,
     "description": {
-      "zh": "（开发中的版本）用于 Koishi 的《崩坏：星穹铁道》游戏工具箱"
+      "zh": "（开发中的版本）用于 Koishi 的《崩坏：星穹铁道》游戏工具箱",
+      "en": "Honkai: Star Rail gametool for koishi"
     },
     "service": {
       "implements": ["starrail"],

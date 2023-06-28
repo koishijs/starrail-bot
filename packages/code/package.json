@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-starrail-code",
   "description": "Get live code for Honkai: Star Rail",
-  "version": "1.0.1-alpha.0",
+  "version": "1.0.2",
   "repository": "https://github.com/koishijs/starrail-bot",
   "author": "Lipraty <i@lonay.me>",
   "main": "lib/index.js",
@@ -13,7 +13,8 @@
   "license": "MIT",
   "koishi": {
     "description": {
-      "zh": "✨ 获取《崩坏：星穹铁道》前瞻直播兑换码"
+      "zh": "✨ 获取《崩坏：星穹铁道》前瞻直播兑换码",
+      "en": "✨ Get live code for Honkai: Star Rail (CN Only)"
     },
     "service": {
       "required": ["starrail"]
