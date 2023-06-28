@@ -93,8 +93,8 @@ function getActId(res: HoyoLab): string {
   let actid: string;
   const oneDay = 24 * 60 * 60 * 1000
   res.list.forEach(list => {
-    const post = list.post.post
-    if (/([0-9].[0-9])版本前瞻特别节目(.+)开启/gm.test(post.subject))
+    const post = list?.post?.post
+    if (/([0-9].[0-9])版本前瞻特别节目(.+)开启/gm.test(post.subject) && (Math.round(new Date().getTime() / 1000) - post.created_at) < (24 * 60 * 60 * 5))
       (JSON.parse(post.structured_content) as any[]).forEach(ele => {
         if (ele['attributes'])
           if (ele['attributes']['link']) {
