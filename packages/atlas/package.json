@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-starrail-atlas",
   "description": "《崩坏 星穹铁道》图鉴",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -20,7 +20,8 @@
   },
   "koishi": {
     "description": {
-      "zh": "✨ 获取《崩坏：星穹铁道》图鉴"
+      "zh": "✨ 获取《崩坏：星穹铁道》图鉴",
+      "en": "✨ Get《Star Rail》Atlas"
     }
   }
 }

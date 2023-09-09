@@ -1,6 +1,5 @@
 import { Context, Schema, Session, h, Dict } from 'koishi'
 export const name = 'starrail-atlas'
-export const using = ['starrail']
 import { resolve } from "path";
 import { pathToFileURL } from "url";
 import fs from 'fs';
@@ -11,9 +10,9 @@ class StarRailAtlas {
   constructor(private ctx: Context, private config: StarRailAtlas.Config) {
     ctx.i18n.define('zh', require('./locales/zh'))
     ctx.on('ready', async () => {
-      this.path_data = require('./path')
+      this.path_data = require(resolve(__dirname,'path.json'))
       this.path_dict = {}
-      let keys = ['relic', 'role', 'lightcone', 'material for role'];
+      let keys = ['relic', 'role', 'lightcone', 'material for role','enemy'];
       let keyMapping = {
         'material for role': '材料'
       };
@@ -33,11 +32,11 @@ class StarRailAtlas {
       if (config.engine) {
         img_url = this.config.repo + path
       } else {
-        img_url = pathToFileURL(resolve(__dirname, this.config.src_path + path)).href
+        img_url = pathToFileURL(resolve(this.config.src_path + path)).href
       }
       return h.image(img_url);
     })
-    ctx.command('sr.atlas', '更新图鉴索引').action(({ session }) => this.update(session))
+    ctx.command('sr.atlas', '更新图鉴索引').alias('更新图鉴索引').action(({ session }) => this.update(session))
   }
   async update(session: Session) {
     const res = await this.ctx.http.get('https://gitee.com/Nwflower/star-rail-atlas/raw/master/path.json', { responseType: 'arraybuffer' })
@@ -79,7 +78,7 @@ namespace StarRailAtlas {
     Schema.object({
       prefix: Schema.string().default('#').description('匹配命令的前缀字符'),
       engine: Schema.boolean().default(true).description('是否使用在线引擎'),
-      src_path: Schema.string().default('../../../star-rail-atlas').description('资源文件的路径'),
+      src_path: Schema.string().default('star-rail-atlas').description('资源文件的路径'),
       repo: Schema.string().default('https://gitee.com/Nwflower/star-rail-atlas/raw/master').description('gitee在线资源的地址'),
     }).description('进阶设置')
 

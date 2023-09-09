@@ -3,6 +3,7 @@ dist
 temp
 data
 logs
+star-rail-atlas
 
 node_modules
 npm-debug.log

@@ -1,4 +1,4 @@
-import { Context, Session, Schema, Logger } from "koishi";
+import { Context, Session, Schema, Logger, Keys } from "koishi";
 import { } from "koishi-plugin-puppeteer";
 import { StarRail } from "koishi-plugin-starrail"
 import * as GachaLogType from "./type"
@@ -151,7 +151,7 @@ class StarRailGachaLog {
       if (!sr_uid) { // user表未绑定uid
         await this.ctx.database.set('user', id, { sr_uid: uid })
       }
-      const account: Pick<StarRail, "uid">[] = (await this.ctx.database.get("star_rail", { uid: [uid] }))
+      const account:Pick<StarRail.Database, Keys<StarRail.Database, any>>[] = (await this.ctx.database.get("star_rail", { uid: [uid] }))
       // 更新数据库
       
       if (account.length == 0) {
