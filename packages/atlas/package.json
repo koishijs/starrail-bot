@@ -15,8 +15,21 @@
     "koishi",
     "plugin"
   ],
+  "author": {
+    "name": "initencounter",
+    "email": "2911583893@qq.com",
+    "url": "https://github.com/initialencounter"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koishijs/starrail-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koishijs/starrail-bot/issues"
+  },
+  "homepage": "https://github.com/koishijs/starrail-bot/tree/main/packages/atlas#readme",
   "peerDependencies": {
-    "koishi": "^4.12.0"
+    "koishi": "^4.15.6"
   },
   "koishi": {
     "description": {
