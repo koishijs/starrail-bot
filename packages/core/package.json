@@ -8,7 +8,6 @@
     "lib",
     "dist"
   ],
-  "scripts": {},
   "koishi": {
     "priview": true,
     "description": {
@@ -16,8 +15,12 @@
       "en": "Honkai: Star Rail gametool for koishi"
     },
     "service": {
-      "implements": ["starrail"],
-      "required": ["database"]
+      "implements": [
+        "starrail"
+      ],
+      "required": [
+        "database"
+      ]
     }
   },
   "keywords": [
@@ -29,10 +32,7 @@
     "mihoyo",
     "miyoushe"
   ],
-  "dependencies": {
-    
-  },
   "peerDependencies": {
-    "koishi": "^4.12.0"
+    "koishi": "^4.17.2"
   }
 }

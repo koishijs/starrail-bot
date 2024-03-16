@@ -9,14 +9,13 @@
     "dist"
   ],
   "license": "AGPL-3.0",
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",
     "plugin"
   ],
   "peerDependencies": {
-    "koishi": "^4.12.0",
+    "koishi": "^4.17.2",
     "koishi-plugin-starrail": "^1.0.0-alpha.1"
   },
   "koishi": {
@@ -27,7 +26,9 @@
       "optional": [
         "puppeteer"
       ],
-      "required": ["starrail"]
+      "required": [
+        "starrail"
+      ]
     }
   }
 }

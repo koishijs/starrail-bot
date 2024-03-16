@@ -17,10 +17,11 @@
       "en": "✨ Get live code for Honkai: Star Rail (CN Only)"
     },
     "service": {
-      "required": ["starrail"]
+      "required": [
+        "starrail"
+      ]
     }
   },
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",
@@ -31,6 +32,6 @@
     "前瞻"
   ],
   "peerDependencies": {
-    "koishi": "^4.12.0"
+    "koishi": "^4.17.2"
   }
 }

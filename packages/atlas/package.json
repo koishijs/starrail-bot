@@ -9,7 +9,6 @@
     "dist"
   ],
   "license": "AGPL-3.0",
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",
@@ -29,7 +28,7 @@
   },
   "homepage": "https://github.com/koishijs/starrail-bot/tree/main/packages/atlas#readme",
   "peerDependencies": {
-    "koishi": "^4.15.6"
+    "koishi": "^4.17.2"
   },
   "koishi": {
     "description": {
