@@ -1,3 +1,9 @@
+interface HoyoRespose<T = any> {
+    retcode: number;
+    message: string;
+    data: T;
+}
+
 interface HoyoLab {
     is_last: boolean,
     next_offset: number,
