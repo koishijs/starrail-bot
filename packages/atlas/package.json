@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-starrail-atlas",
   "description": "《崩坏 星穹铁道》图鉴",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/koishijs/starrail-bot/tree/main/packages/atlas#readme",
   "peerDependencies": {
-    "koishi": "^4.17.2"
+    "koishi": "^4.17.4"
   },
   "koishi": {
     "description": {
