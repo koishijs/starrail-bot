@@ -66,8 +66,8 @@ class StarRailAtlas {
         case 'enemy':
           path = this.enemy_dict[target[1]]
           break
-        case 'material for role':
-          path = '/guide for role/' + this.enemy_dict[target[1]] + '.png'
+        case 'guide for role':
+          path = '/guide for role/' + this.role_dict[target[1]] + '.png'
           break
       }
       let img_url: string
@@ -76,7 +76,6 @@ class StarRailAtlas {
       } else {
         img_url = pathToFileURL(resolve(this.config.src_path + path)).href
       }
-      console.log(img_url)
       return h.image(img_url);
     })
     ctx.command('sr.atlas', '更新图鉴索引').alias('更新图鉴索引').action(({ session }) => this.update(session))
@@ -110,7 +109,7 @@ namespace StarRailAtlas {
       role: string[]
       enemy: string[]
       lightcone: string[]
-      'material for role': string[]
+      'guide for role': string[]
       relic: string[]
     }
   }
@@ -118,7 +117,7 @@ namespace StarRailAtlas {
     role: Schema.array(String).default(['角色']).description('角色'),
     enemy: Schema.array(String).default(['怪', 'boss']).description('敌人'),
     lightcone: Schema.array(String).default(['光锥']).description('光锥'),
-    'material for role': Schema.array(String).default(['角色材料']).description('角色材料'),
+    'guide for role': Schema.array(String).default(['角色攻略']).description('角色攻略'),
     relic: Schema.array(String).default(['遗器']).description('遗器'),
   })
 
