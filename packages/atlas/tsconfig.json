@@ -1,16 +1,16 @@
 {
-  "extends": "../../tsconfig.base",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
     "target": "es2022",
-    "module": "commonjs",
+    "module": "esnext",
     "declaration": true,
+    "emitDeclarationOnly": true,
     "composite": true,
     "incremental": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "@satorijs/element",
     "types": [
@@ -18,4 +18,7 @@
       "yml-register/types"
     ]
   },
+  "include": [
+    "src"
+  ]
 }
